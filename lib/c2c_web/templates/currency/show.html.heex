@@ -1,0 +1,13 @@
+<h1>Show Currency</h1>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @currency.name %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.currency_path(@conn, :edit, @currency) %></span> |
+<span><%= link "Back", to: Routes.currency_path(@conn, :index) %></span>

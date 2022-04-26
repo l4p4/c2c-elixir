@@ -1,0 +1,26 @@
+<h1>Listing Currencies</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for currency <- @currencies do %>
+    <tr>
+      <td><%= currency.name %></td>
+
+      <td>
+        <span><%= link "Show", to: Routes.currency_path(@conn, :show, currency) %></span>
+        <span><%= link "Edit", to: Routes.currency_path(@conn, :edit, currency) %></span>
+        <span><%= link "Delete", to: Routes.currency_path(@conn, :delete, currency), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Currency", to: Routes.currency_path(@conn, :new) %></span>

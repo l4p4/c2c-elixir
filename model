@@ -8,6 +8,8 @@ mix phx.gen.auth Accounts User users
 - Currency
 	name
 
+mix phx.gen.html Currencies Currency currencies name:string
+
 - ApiCurrency
 	userId
 	url
