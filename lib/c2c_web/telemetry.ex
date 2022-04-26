@@ -1,4 +1,7 @@
 defmodule C2cWeb.Telemetry do
+  @moduledoc """
+  The module.
+  """
   use Supervisor
   import Telemetry.Metrics
 
