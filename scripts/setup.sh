@@ -12,7 +12,7 @@ apt-get upgrade
 # Install the mandatory tools
 ################################################################################
 # install utilities
-apt-get -yqq install vim git curl unzip
+apt-get -yqq install vim git curl unzip build-essential make
 
 ################################################################################
 # Install the development tools
