@@ -1,0 +1,26 @@
+* Each user should be able to have their own conversion API settings.
+* Each user must be able to register more than one API to perform conversions.
+
+- User
+
+mix phx.gen.auth Accounts User users
+
+- Currency
+	name
+
+- ApiCurrency
+	userId
+	url
+	apiKey
+	limit
+	remainingConversions
+	description
+
+- Transaction
+	userId
+	currencyFrom
+	currencyTo
+	amountFrom
+	amountTo
+	feeConvert
+	apiCurrencyId
