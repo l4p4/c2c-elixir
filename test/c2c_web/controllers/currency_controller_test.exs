@@ -71,9 +71,9 @@ defmodule C2cWeb.CurrencyControllerTest do
       conn = delete(conn, Routes.currency_path(conn, :delete, currency))
       assert redirected_to(conn) == Routes.currency_path(conn, :index)
 
-      assert_error_sent 404, fn ->
+      assert_error_sent(404, fn ->
         get(conn, Routes.currency_path(conn, :show, currency))
-      end
+      end)
     end
   end
 

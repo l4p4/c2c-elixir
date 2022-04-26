@@ -101,5 +101,4 @@ defmodule C2c.Currencies do
   def change_currency(%Currency{} = currency, attrs \\ %{}) do
     Currency.changeset(currency, attrs)
   end
-
 end
