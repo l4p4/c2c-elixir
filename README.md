@@ -9,6 +9,12 @@ To start your Phoenix server:
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 Run in another port with:  `PORT=8080 mix phx.server`
 
+Running your Phoenix tests:
+`mix test`
+
+Verifying your Phoenix Lint:
+`mix credo`
+
 Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
 
 ## Learn more
