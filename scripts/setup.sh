@@ -32,7 +32,9 @@ sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.
 mix local.hex
 
 # now we can proceed to install Phoenix:
-mix archive.install https://github.com/phoenixframework/archives/raw/master/phx_new.ez
+curl -o phx_new.ez https://raw.githubusercontent.com/phoenixframework/archives/master/phx_new.ez
+mix archive.install hex phx_new 1.6.7
+
 
 # Phoenix uses brunch.io to compile static assets, (javascript, css and more), so you will need to install Node.js.
 curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
