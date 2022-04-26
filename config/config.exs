@@ -56,8 +56,8 @@ if Mix.env() == :dev do
     auto_install: true,
     verbose: true,
     branches: [
-      whitelist: ["feature-.*"],
-      blacklist: ["master"]
+      whitelist: ["master"],
+#      blacklist: ["master"]
     ],
     hooks: [
       pre_commit: [
@@ -67,14 +67,13 @@ if Mix.env() == :dev do
           {:cmd, "mix format --check-formatted"},
           {:cmd, "mix credo --strict"},
           {:cmd, "mix doctor --summary"},
-          {:cmd, "mix test"}
+          {:cmd, "mix test --color"}
         ]
       ],
       pre_push: [
         verbose: false,
         tasks: [
           {:cmd, "mix dialyzer"},
-          {:cmd, "mix test --color"},
           {:cmd, "echo 'success!'"}
         ]
       ]
