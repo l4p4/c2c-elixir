@@ -1,0 +1,32 @@
+<h1>Show Api currency</h1>
+
+<ul>
+  <li>
+    <strong>Url:</strong>
+    <%= @api_currency.url %>
+  </li>
+
+  <li>
+    <strong>Api key:</strong>
+    <%= @api_currency.api_key %>
+  </li>
+
+  <li>
+    <strong>Limit:</strong>
+    <%= @api_currency.limit %>
+  </li>
+
+  <li>
+    <strong>Remaining conversions:</strong>
+    <%= @api_currency.remaining_conversions %>
+  </li>
+
+  <li>
+    <strong>Description:</strong>
+    <%= @api_currency.description %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.api_currency_path(@conn, :edit, @api_currency) %></span> |
+<span><%= link "Back", to: Routes.api_currency_path(@conn, :index) %></span>

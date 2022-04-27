@@ -11,18 +11,20 @@ mix phx.gen.auth Accounts User users
 mix phx.gen.html Currencies Currency currencies name:string
 
 - ApiCurrency
-	userId
+	user_id
 	url
-	apiKey
+	api_key
 	limit
-	remainingConversions
+	remaining_conversions
 	description
 
+mix phx.gen.html ApiCurrencies ApiCurrency api_currencies user_id:references:users url:string api_key:string limit:integer remaining_conversions:integer description:text
+
 - Transaction
-	userId
-	currencyFrom
-	currencyTo
-	amountFrom
-	amountTo
-	feeConvert
-	apiCurrencyId
+	user_id
+	currency_from
+	currency_to
+	amount_from
+	amount_to
+	fee_convert
+	api_currency_id

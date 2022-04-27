@@ -50,6 +50,9 @@ pre_push: [
 ] 
 ```
 
+#####[SEED DataBase](https://hexdocs.pm/phoenix/1.3.0-rc.0/seeding_data.html)
+######Run the follow command to populate currency table.
+`mix run priv/repo/seeds.exs`
 
 Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
 
