@@ -1,14 +1,19 @@
 defmodule C2c.ApiCurrencies.ApiCurrency do
+  @moduledoc """
+    The API Currency module.
+  """
   use Ecto.Schema
   import Ecto.Changeset
+  alias C2c.Transactions.Transaction
 
   schema "api_currencies" do
-    field :api_key, :string
-    field :description, :string
-    field :limit, :integer
-    field :remaining_conversions, :integer
-    field :url, :string
-    field :user_id, :id
+    field(:api_key, :string)
+    field(:description, :string)
+    field(:limit, :integer)
+    field(:remaining_conversions, :integer)
+    field(:url, :string)
+    field(:user_id, :id)
+    has_many(:transactions, Transaction)
 
     timestamps()
   end

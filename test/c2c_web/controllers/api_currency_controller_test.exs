@@ -3,9 +3,27 @@ defmodule C2cWeb.ApiCurrencyControllerTest do
 
   import C2c.ApiCurrenciesFixtures
 
-  @create_attrs %{api_key: "some api_key", description: "some description", limit: 42, remaining_conversions: 42, url: "some url"}
-  @update_attrs %{api_key: "some updated api_key", description: "some updated description", limit: 43, remaining_conversions: 43, url: "some updated url"}
-  @invalid_attrs %{api_key: nil, description: nil, limit: nil, remaining_conversions: nil, url: nil}
+  @create_attrs %{
+    api_key: "some api_key",
+    description: "some description",
+    limit: 42,
+    remaining_conversions: 42,
+    url: "some url"
+  }
+  @update_attrs %{
+    api_key: "some updated api_key",
+    description: "some updated description",
+    limit: 43,
+    remaining_conversions: 43,
+    url: "some updated url"
+  }
+  @invalid_attrs %{
+    api_key: nil,
+    description: nil,
+    limit: nil,
+    remaining_conversions: nil,
+    url: nil
+  }
 
   describe "index" do
     test "lists all api_currencies", %{conn: conn} do
@@ -51,7 +69,11 @@ defmodule C2cWeb.ApiCurrencyControllerTest do
     setup [:create_api_currency]
 
     test "redirects when data is valid", %{conn: conn, api_currency: api_currency} do
-      conn = put(conn, Routes.api_currency_path(conn, :update, api_currency), api_currency: @update_attrs)
+      conn =
+        put(conn, Routes.api_currency_path(conn, :update, api_currency),
+          api_currency: @update_attrs
+        )
+
       assert redirected_to(conn) == Routes.api_currency_path(conn, :show, api_currency)
 
       conn = get(conn, Routes.api_currency_path(conn, :show, api_currency))
@@ -59,7 +81,11 @@ defmodule C2cWeb.ApiCurrencyControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, api_currency: api_currency} do
-      conn = put(conn, Routes.api_currency_path(conn, :update, api_currency), api_currency: @invalid_attrs)
+      conn =
+        put(conn, Routes.api_currency_path(conn, :update, api_currency),
+          api_currency: @invalid_attrs
+        )
+
       assert html_response(conn, 200) =~ "Edit Api currency"
     end
   end
@@ -71,9 +97,9 @@ defmodule C2cWeb.ApiCurrencyControllerTest do
       conn = delete(conn, Routes.api_currency_path(conn, :delete, api_currency))
       assert redirected_to(conn) == Routes.api_currency_path(conn, :index)
 
-      assert_error_sent 404, fn ->
+      assert_error_sent(404, fn ->
         get(conn, Routes.api_currency_path(conn, :show, api_currency))
-      end
+      end)
     end
   end
 

@@ -1,0 +1,34 @@
+<h1>Listing Transactions</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Currency from</th>
+      <th>Currency To</th>
+      <th>Amount from</th>
+      <th>Amount to</th>
+      <th>Fee convert</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for transaction <- @transactions do %>
+    <tr>
+      <td><%= transaction.currency_from %></td>
+      <td><%= transaction.currency_to %></td>
+      <td><%= transaction.amount_from %></td>
+      <td><%= transaction.amount_to %></td>
+      <td><%= transaction.fee_convert %></td>
+
+      <td>
+        <span><%= link "Show", to: Routes.transaction_path(@conn, :show, transaction) %></span>
+        <span><%= link "Edit", to: Routes.transaction_path(@conn, :edit, transaction) %></span>
+        <span><%= link "Delete", to: Routes.transaction_path(@conn, :delete, transaction), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Transaction", to: Routes.transaction_path(@conn, :new) %></span>

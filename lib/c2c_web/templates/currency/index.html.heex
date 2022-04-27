@@ -4,7 +4,6 @@
   <thead>
     <tr>
       <th>Name</th>
-
       <th></th>
     </tr>
   </thead>
@@ -12,7 +11,6 @@
 <%= for currency <- @currencies do %>
     <tr>
       <td><%= currency.name %></td>
-
       <td>
         <span><%= link "Show", to: Routes.currency_path(@conn, :show, currency) %></span>
         <span><%= link "Edit", to: Routes.currency_path(@conn, :edit, currency) %></span>

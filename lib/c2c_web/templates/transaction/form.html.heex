@@ -1,0 +1,32 @@
+<.form let={f} for={@changeset} action={@action}>
+<%= if @changeset.action do %>
+<div class="alert alert-danger">
+  <p>Oops, something went wrong! Please check the errors below.</p>
+</div>
+<% end %>
+
+<%= label f, :currency_from, "Currency From", class: "control-label" %>
+<%= select f, :currency_from, Enum.map(@currencies, &{&1.name, &1.id}), prompt: [key: "Choose your role", disabled: true, selected: @selected_currency_from] %>
+
+<%= label f, :amount_from %>
+<%= number_input f, :amount_from, step: "any" %>
+<%= error_tag f, :amount_from %>
+
+<%= label f, :currency_to, "Currency To", class: "control-label" %>
+<%= select f, :currency_to, Enum.map(@currencies, &{&1.name, &1.id}), prompt: [key: "Choose your role", disabled: true, selected: @selected_currency_to] %>
+
+<%= label f, :amount_to %>
+<%= number_input f, :amount_to, step: "any" %>
+<%= error_tag f, :amount_to %>
+
+<%= label f, :api_currency_id, "API to convert:", class: "control-label" %>
+<%= select f, :api_currency_id, Enum.map(@api_currencies, &{&1.url, &1.id}), selected: @selected_api_currency %>
+
+<%= label f, :fee_convert %>
+<%= number_input f, :fee_convert, step: "any" %>
+<%= error_tag f, :fee_convert %>
+
+<div>
+  <%= submit "Save" %>
+</div>
+</.form>

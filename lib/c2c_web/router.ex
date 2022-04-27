@@ -22,7 +22,8 @@ defmodule C2cWeb.Router do
 
     get("/", PageController, :index)
     resources("/currencies", CurrencyController)
-    resources "/api_currencies", ApiCurrencyController
+    resources("/api_currencies", ApiCurrencyController)
+    resources("/transactions", TransactionController)
   end
 
   # Other scopes may use custom stacks.

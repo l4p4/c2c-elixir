@@ -28,3 +28,18 @@ mix phx.gen.html ApiCurrencies ApiCurrency api_currencies user_id:references:use
 	amount_to
 	fee_convert
 	api_currency_id
+
+mix phx.gen.html Transactions Transaction transactions user_id:references:users \
+    currency_from:references:currencies \
+    currency_to:references:currencies \
+    amount_from:float \
+    amount_to:float \
+    fee_convert:float \
+    api_currency_id:references:api_currencies
+
+
+Docs:
+Generates: https://hexdocs.pm/phoenix/mix_tasks.html
+Associations: https://elixirschool.com/en/lessons/ecto/associations/#belongs-tohas-many-2
+Query set: https://stackoverflow.com/questions/33803754/phoenix-ordering-a-query-set
+benchmark Refs: https://medium.com/@kana_sama/length-vs-amount-37a1c431141a

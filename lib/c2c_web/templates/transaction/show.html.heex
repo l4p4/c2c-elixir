@@ -1,0 +1,29 @@
+<h1>Show Transaction</h1>
+
+<ul>
+
+  <li>
+    <strong>API to process convert:</strong>
+    <%= @api_currency.url %>
+  </li>
+  <li>
+    <strong>Amount from:</strong>
+    <%= @currency_from.name %>
+    <%= @transaction.amount_from %>
+  </li>
+
+  <li>
+    <strong>Amount to:</strong>
+    <%= @currency_to.name %>
+    <%= @transaction.amount_to %>
+  </li>
+
+  <li>
+    <strong>Fee convert:</strong>
+    <%= @transaction.fee_convert %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.transaction_path(@conn, :edit, @transaction) %></span> |
+<span><%= link "Back", to: Routes.transaction_path(@conn, :index) %></span>

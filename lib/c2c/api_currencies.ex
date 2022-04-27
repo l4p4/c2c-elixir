@@ -38,8 +38,10 @@ defmodule C2c.ApiCurrencies do
   def get_api_currency!(user, id), do: Repo.get!(filter_currencies_by_user_id(user), id)
 
   @doc """
-    Filter registers by user to show only specific data, created by user in assoc.
   """
+  def get_api_currency_by_id!(id), do: Repo.get!(ApiCurrency, id)
+
+  # Filter registers by user to show only specific data, created by user in assoc.
   defp filter_currencies_by_user_id(user) do
     Ecto.assoc(user, :api_currencies)
   end
@@ -60,7 +62,6 @@ defmodule C2c.ApiCurrencies do
     %ApiCurrency{}
     |> ApiCurrency.changeset(attrs)
     |> Repo.insert()
-
   end
 
   @doc """
