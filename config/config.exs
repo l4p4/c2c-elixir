@@ -44,6 +44,18 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+# Swagger
+config :c2c, :phoenix_swagger,
+       swagger_files: %{
+         "priv/static/swagger.json" => [
+           router: C2cWeb.Router,     # phoenix routes will be converted to swagger paths
+           endpoint: C2cWeb.Endpoint  # (optional) endpoint config used to set host, port and https schemes.
+         ]
+       }
+
+# Use Jason for JSON parsing in Phoenix Swagger
+config :phoenix_swagger, json_library: Jason
+
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 

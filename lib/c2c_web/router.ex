@@ -17,6 +17,47 @@ defmodule C2cWeb.Router do
     plug(:accepts, ["json"])
   end
 
+  scope "/api", C2cWeb do
+    pipe_through :api
+    resources "/currencies", CurrencyController
+  end
+
+  scope "/api/swagger" do
+    forward "/", PhoenixSwagger.Plug.SwaggerUI,
+            otp_app: :c2c,
+            swagger_file: "swagger.json"
+  end
+
+  def swagger_info do
+    %{
+      schemes: ["http", "https", "ws", "wss"],
+      info: %{
+        version: "1.0",
+        title: "C2cWeb",
+        description: "API Documentation for C2cWeb v1",
+        termsOfService: "Open for public",
+        contact: %{
+          name: "Larry Pavanery",
+          email: "pavanery@gmail.com"
+        }
+      },
+      securityDefinitions: %{
+        Bearer: %{
+          type: "apiKey",
+          name: "Authorization",
+          description:
+            "API Token must be provided via `Authorization: Bearer ` header",
+          in: "header"
+        }
+      },
+      consumes: ["application/json"],
+      produces: ["application/json"],
+      tags: [
+        %{name: "Currencies", description: "Currency resources"},
+      ]
+    }
+  end
+
   scope "/", C2cWeb do
     pipe_through(:browser)
 

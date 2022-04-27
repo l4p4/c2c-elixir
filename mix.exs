@@ -7,7 +7,7 @@ defmodule C2c.MixProject do
       version: "0.1.0",
       elixir: "~> 1.12",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:gettext] ++ Mix.compilers(),
+      compilers: [:phoenix, :gettext] ++ Mix.compilers ++ [:phoenix_swagger],
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()
@@ -53,7 +53,9 @@ defmodule C2c.MixProject do
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:git_hooks, "~> 0.7.0", only: [:test, :dev], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
-      {:doctor, "~> 0.18.0"}
+      {:doctor, "~> 0.18.0"},
+      {:phoenix_swagger, "~> 0.8"},
+      {:ex_json_schema, "~> 0.5"}
     ]
   end
 

@@ -4,6 +4,15 @@ defmodule C2cWeb.CurrencyController do
   alias C2c.Currencies
   alias C2c.Currencies.Currency
 
+  import Plug.Conn.Status
+  use PhoenixSwagger
+
+  swagger_path :index do
+    get("/currencies")
+    description("List of currencies")
+    response(code(:ok), "Success")
+  end
+
   def index(conn, _params) do
     currencies = Currencies.list_currencies()
     render(conn, "index.html", currencies: currencies)
