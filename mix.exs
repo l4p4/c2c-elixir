@@ -7,7 +7,7 @@ defmodule C2c.MixProject do
       version: "0.1.0",
       elixir: "~> 1.12",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:phoenix, :gettext] ++ Mix.compilers ++ [:phoenix_swagger],
+      compilers: [:phoenix, :gettext] ++ Mix.compilers() ++ [:phoenix_swagger],
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()
@@ -71,7 +71,8 @@ defmodule C2c.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      "assets.deploy": ["esbuild default --minify", "phx.digest"]
-    ]
+      "assets.deploy": ["esbuild default --minify", "phx.digest"],
+      swagger: ["phx.swagger.generate priv/static/swagger.json --router C2cWeb.Router --endpoint C2cWeb.Endpoint"]
+]
   end
 end

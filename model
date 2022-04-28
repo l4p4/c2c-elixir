@@ -9,6 +9,7 @@ mix phx.gen.auth Accounts User users
 	name
 
 mix phx.gen.html Currencies Currency currencies name:string
+mix swagger.gen Currencies Currency currencies name:string --no-context
 
 - ApiCurrency
 	user_id
@@ -19,6 +20,7 @@ mix phx.gen.html Currencies Currency currencies name:string
 	description
 
 mix phx.gen.html ApiCurrencies ApiCurrency api_currencies user_id:references:users url:string api_key:string limit:integer remaining_conversions:integer description:text
+mix swagger.gen ApiCurrencies ApiCurrency api_currencies user_id:references:users url:string api_key:string limit:integer remaining_conversions:integer description:text --no-context
 
 - Transaction
 	user_id
@@ -36,10 +38,17 @@ mix phx.gen.html Transactions Transaction transactions user_id:references:users 
     amount_to:float \
     fee_convert:float \
     api_currency_id:references:api_currencies
-
+mix swagger.gen Transactions Transaction transactions user_id:references:users \
+                    currency_from:references:currencies \
+                    currency_to:references:currencies \
+                    amount_from:float \
+                    amount_to:float \
+                    fee_convert:float \
+                    api_currency_id:references:api_currencies --no-context
 
 Docs:
 Generates: https://hexdocs.pm/phoenix/mix_tasks.html
 Associations: https://elixirschool.com/en/lessons/ecto/associations/#belongs-tohas-many-2
 Query set: https://stackoverflow.com/questions/33803754/phoenix-ordering-a-query-set
 benchmark Refs: https://medium.com/@kana_sama/length-vs-amount-37a1c431141a
+Automate Swagger: https://fullstackphoenix.com/tutorials/create-swagger-compatible-custom-phoenix-json-generator

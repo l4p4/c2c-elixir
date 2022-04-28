@@ -6,9 +6,172 @@ defmodule C2cWeb.TransactionController do
   alias C2c.Transactions
   alias C2c.Transactions.Transaction
 
+  use PhoenixSwagger
+
+  swagger_path :index do
+    get("/api/transactions")
+    summary("List transactions")
+    description("List all transactions in the database")
+    tag("Transactions")
+    produces("application/json")
+    security([%{Bearer: []}])
+
+    response(200, "OK", Schema.ref(:TransactionsResponse),
+      example: %{
+        data: [
+          %{
+            id: 1,
+            amount_from: 120.5,
+            amount_to: 120.5,
+            fee_convert: 120.5
+          }
+        ]
+      }
+    )
+  end
+
+  swagger_path :create do
+    post("/api/transactions")
+    summary("Create transaction")
+    description("Creates a new transaction")
+    tag("Transactions")
+    consumes("application/json")
+    produces("application/json")
+    security([%{Bearer: []}])
+
+    parameter(:transaction, :body, Schema.ref(:TransactionRequest), "The transaction details",
+      example: %{
+        transaction: %{amount_from: 120.5, amount_to: 120.5, fee_convert: 120.5}
+      }
+    )
+
+    response(201, "Transaction created OK", Schema.ref(:TransactionResponse),
+      example: %{
+        data: %{
+          id: 1,
+          amount_from: 120.5,
+          amount_to: 120.5,
+          fee_convert: 120.5
+        }
+      }
+    )
+  end
+
+  swagger_path :show do
+    get("/api/transactions/{id}")
+    summary("Show Transaction")
+    description("Show a transaction by ID")
+    tag("Transactions")
+    produces("application/json")
+    parameter(:id, :path, :integer, "Transaction ID", required: true, example: 123)
+    security([%{Bearer: []}])
+
+    response(200, "OK", Schema.ref(:TransactionResponse),
+      example: %{
+        data: %{
+          id: 123,
+          amount_from: 120.5,
+          amount_to: 120.5,
+          fee_convert: 120.5
+        }
+      }
+    )
+  end
+
+  swagger_path :update do
+    put("/api/transactions/{id}")
+    summary("Update transaction")
+    description("Update all attributes of a transaction")
+    tag("Transactions")
+    consumes("application/json")
+    produces("application/json")
+    security([%{Bearer: []}])
+
+    parameters do
+      id(:path, :integer, "Transaction ID", required: true, example: 3)
+
+      transaction(:body, Schema.ref(:TransactionRequest), "The transaction details",
+        example: %{
+          transaction: %{amount_from: 120.5, amount_to: 120.5, fee_convert: 120.5}
+        }
+      )
+    end
+
+    response(200, "Updated Successfully", Schema.ref(:TransactionResponse),
+      example: %{
+        data: %{
+          id: 3,
+          amount_from: 120.5,
+          amount_to: 120.5,
+          fee_convert: 120.5
+        }
+      }
+    )
+  end
+
+  swagger_path :delete do
+    PhoenixSwagger.Path.delete("/api/transactions/{id}")
+    summary("Delete Transaction")
+    description("Delete a transaction by ID")
+    tag("Transactions")
+    parameter(:id, :path, :integer, "Transaction ID", required: true, example: 3)
+    response(203, "No Content - Deleted Successfully")
+    security([%{Bearer: []}])
+  end
+
+  def swagger_definitions do
+    %{
+      Transaction:
+        swagger_schema do
+          title("Transaction")
+          description("A transaction of the app")
+
+          properties do
+            id(:integer, "Transaction ID")
+            amount_from(:string, "Transaction amount_from")
+            amount_to(:string, "Transaction amount_to")
+            fee_convert(:string, "Transaction fee_convert")
+          end
+
+          example(%{
+            id: 123,
+            amount_from: 120.5,
+            amount_to: 120.5,
+            fee_convert: 120.5
+          })
+        end,
+      TransactionRequest:
+        swagger_schema do
+          title("TransactionRequest")
+          description("POST body for creating a transaction")
+          property(:transaction, Schema.ref(:Transaction), "The transaction details")
+
+          example(%{
+            transaction: %{
+              amount_from: 120.5,
+              amount_to: 120.5,
+              fee_convert: 120.5
+            }
+          })
+        end,
+      TransactionResponse:
+        swagger_schema do
+          title("TransactionResponse")
+          description("Response schema for single transaction")
+          property(:data, Schema.ref(:Transaction), "The transaction details")
+        end,
+      TransactionsResponse:
+        swagger_schema do
+          title("TransactionResponse")
+          description("Response schema for multiple transactions")
+          property(:data, Schema.array(:Transaction), "The transactions details")
+        end
+    }
+  end
+
   def index(conn, _params) do
     transactions = Transactions.list_transactions(conn.assigns.current_user)
-    render(conn, "index.html", transactions: transactions)
+    render(conn, :index, transactions: transactions)
   end
 
   def new(conn, _params) do
@@ -16,7 +179,7 @@ defmodule C2cWeb.TransactionController do
     currencies = Currencies.list_currencies()
     api_currencies = ApiCurrencies.list_api_currencies(conn.assigns.current_user)
 
-    render(conn, "new.html",
+    render(conn, :new,
       changeset: changeset,
       currencies: currencies,
       api_currencies: api_currencies,
@@ -36,7 +199,7 @@ defmodule C2cWeb.TransactionController do
         |> redirect(to: Routes.transaction_path(conn, :show, transaction))
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "new.html", changeset: changeset)
+        render(conn, :new, changeset: changeset)
     end
   end
 
@@ -46,7 +209,7 @@ defmodule C2cWeb.TransactionController do
     currency_from = Currencies.get_currency!(transaction.currency_from)
     currency_to = Currencies.get_currency!(transaction.currency_to)
 
-    render(conn, "show.html",
+    render(conn, :show,
       transaction: transaction,
       api_currency: api_currency,
       currency_from: currency_from,
@@ -61,7 +224,7 @@ defmodule C2cWeb.TransactionController do
     currencies = Currencies.list_currencies()
     api_currencies = ApiCurrencies.list_api_currencies(conn.assigns.current_user)
 
-    render(conn, "edit.html",
+    render(conn, :edit,
       transaction: transaction,
       changeset: changeset,
       currencies: currencies,
@@ -82,7 +245,7 @@ defmodule C2cWeb.TransactionController do
         |> redirect(to: Routes.transaction_path(conn, :show, transaction))
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "edit.html", transaction: transaction, changeset: changeset)
+        render(conn, :edit, transaction: transaction, changeset: changeset)
     end
   end
 

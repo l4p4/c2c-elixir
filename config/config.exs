@@ -46,12 +46,14 @@ config :logger, :console,
 
 # Swagger
 config :c2c, :phoenix_swagger,
-       swagger_files: %{
-         "priv/static/swagger.json" => [
-           router: C2cWeb.Router,     # phoenix routes will be converted to swagger paths
-           endpoint: C2cWeb.Endpoint  # (optional) endpoint config used to set host, port and https schemes.
-         ]
-       }
+  swagger_files: %{
+    "priv/static/swagger.json" => [
+      # phoenix routes will be converted to swagger paths
+      router: C2cWeb.Router,
+      # (optional) endpoint config used to set host, port and https schemes.
+      endpoint: C2cWeb.Endpoint
+    ]
+  }
 
 # Use Jason for JSON parsing in Phoenix Swagger
 config :phoenix_swagger, json_library: Jason

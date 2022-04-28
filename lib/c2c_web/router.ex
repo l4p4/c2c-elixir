@@ -18,14 +18,15 @@ defmodule C2cWeb.Router do
   end
 
   scope "/api/swagger" do
-    forward "/", PhoenixSwagger.Plug.SwaggerUI,
-            otp_app: :c2c,
-            swagger_file: "swagger.json"
+    forward("/", PhoenixSwagger.Plug.SwaggerUI,
+      otp_app: :c2c,
+      swagger_file: "swagger.json"
+    )
   end
 
   def swagger_info do
     %{
-      schemes: ["http", "https", "ws", "wss"],
+      schemes: ["http"],
       info: %{
         version: "1.0",
         title: "C2cWeb",
@@ -40,21 +41,20 @@ defmodule C2cWeb.Router do
         Bearer: %{
           type: "apiKey",
           name: "Authorization",
-          description:
-            "API Token must be provided via `Authorization: Bearer ` header",
+          description: "API Token must be provided via `Authorization: Bearer ` header",
           in: "header"
         }
       },
       consumes: ["application/json"],
       produces: ["application/json"],
       tags: [
-        %{name: "Currencies", description: "Currency resources"},
+        %{name: "Currencies", description: "Currency resources"}
       ]
     }
   end
 
   scope "/", C2cWeb do
-    pipe_through(:browser)
+    pipe_through([:browser, :require_authenticated_user])
 
     get("/", PageController, :index)
     resources("/currencies", CurrencyController)
@@ -64,8 +64,10 @@ defmodule C2cWeb.Router do
 
   # API expose
   scope "/api", C2cWeb do
-    pipe_through :api
-    resources "/currencies", CurrencyController, only: [:index, :show]
+    pipe_through([:api])
+    resources("/currencies", CurrencyController)
+    resources("/api_currencies", ApiCurrencyController)
+    resources("/transactions", TransactionController)
   end
 
   # Other scopes may use custom stacks.

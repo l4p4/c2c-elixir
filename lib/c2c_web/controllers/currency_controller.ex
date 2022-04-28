@@ -4,24 +4,104 @@ defmodule C2cWeb.CurrencyController do
   alias C2c.Currencies
   alias C2c.Currencies.Currency
 
-  import Plug.Conn.Status
   use PhoenixSwagger
 
   swagger_path :index do
-    get("/currencies")
-    description("List of currencies")
-    response(200, "Success", Schema.ref(:Currency))
+    get("/api/currencies")
+    summary("List currencies")
+    description("List all currencies in the database")
+    tag("Currencys")
+    produces("application/json")
+
+    response(200, "OK", Schema.ref(:CurrencysResponse),
+      example: %{
+        data: [
+          %{
+            id: 1,
+            name: "some name"
+          }
+        ]
+      }
+    )
+  end
+
+  swagger_path :create do
+    post("/api/currencies")
+    summary("Create currency")
+    description("Creates a new currency")
+    tag("Currencys")
+    consumes("application/json")
+    produces("application/json")
+
+    parameter(:currency, :body, Schema.ref(:CurrencyRequest), "The currency details",
+      example: %{
+        currency: %{name: "some name"}
+      }
+    )
+
+    response(201, "Currency created OK", Schema.ref(:CurrencyResponse),
+      example: %{
+        data: %{
+          id: 1,
+          name: "some name"
+        }
+      }
+    )
   end
 
   swagger_path :show do
-    get("/currencies/{id}")
-    description("Currency")
+    get("/api/currencies/{id}")
+    summary("Show Currency")
+    description("Show a currency by ID")
+    tag("Currencys")
+    produces("application/json")
+    parameter(:id, :path, :integer, "Currency ID", required: true, example: 123)
+
+    response(200, "OK", Schema.ref(:CurrencyResponse),
+      example: %{
+        data: %{
+          id: 123,
+          name: "some name"
+        }
+      }
+    )
+  end
+
+  swagger_path :update do
+    put("/api/currencies/{id}")
+    summary("Update currency")
+    description("Update all attributes of a currency")
+    tag("Currencys")
+    consumes("application/json")
+    produces("application/json")
 
     parameters do
-      id(:path, :integer, "Currency ID", required: true, example: 1)
+      id(:path, :integer, "Currency ID", required: true, example: 3)
+
+      currency(:body, Schema.ref(:CurrencyRequest), "The currency details",
+        example: %{
+          currency: %{name: "some name"}
+        }
+      )
     end
 
-    response(200, "Success", Schema.ref(:CurrencyResponse))
+    response(200, "Updated Successfully", Schema.ref(:CurrencyResponse),
+      example: %{
+        data: %{
+          id: 3,
+          name: "some name"
+        }
+      }
+    )
+  end
+
+  swagger_path :delete do
+    PhoenixSwagger.Path.delete("/api/currencies/{id}")
+    summary("Delete Currency")
+    description("Delete a currency by ID")
+    tag("Currencys")
+    parameter(:id, :path, :integer, "Currency ID", required: true, example: 3)
+    response(203, "No Content - Deleted Successfully")
   end
 
   def swagger_definitions do
@@ -29,25 +109,41 @@ defmodule C2cWeb.CurrencyController do
       Currency:
         swagger_schema do
           title("Currency")
+          description("A currency of the app")
 
           properties do
-            name(:string, "", required: true)
+            id(:integer, "Currency ID")
+            name(:string, "Currency name")
           end
 
           example(%{
-            id: 1,
-            name: "BRL"
+            id: 123,
+            name: "some name"
           })
         end,
-      CurrenciesResponse:
+      CurrencyRequest:
         swagger_schema do
-          title("List of currencies")
-          property(:currencies, Schema.array(:Currency), "")
+          title("CurrencyRequest")
+          description("POST body for creating a currency")
+          property(:currency, Schema.ref(:Currency), "The currency details")
+
+          example(%{
+            currency: %{
+              name: "some name"
+            }
+          })
         end,
       CurrencyResponse:
         swagger_schema do
-          title("Currency")
-          property(:currency, Schema.ref(:Currency), "")
+          title("CurrencyResponse")
+          description("Response schema for single currency")
+          property(:data, Schema.ref(:Currency), "The currency details")
+        end,
+      CurrencysResponse:
+        swagger_schema do
+          title("CurrencyResponse")
+          description("Response schema for multiple currencies")
+          property(:data, Schema.array(:Currency), "The currencies details")
         end
     }
   end
