@@ -46,10 +46,7 @@ defmodule C2cWeb.Router do
         }
       },
       consumes: ["application/json"],
-      produces: ["application/json"],
-      tags: [
-        %{name: "Currencies", description: "Currency resources"}
-      ]
+      produces: ["application/json"]
     }
   end
 
