@@ -4,7 +4,7 @@ defmodule C2cWeb.Router do
   import C2cWeb.UserAuth
 
   pipeline :browser do
-    plug(:accepts, ["html"])
+    plug(:accepts, ["html", "json"])
     plug(:fetch_session)
     plug(:fetch_live_flash)
     plug(:put_root_layout, {C2cWeb.LayoutView, :root})
@@ -15,11 +15,6 @@ defmodule C2cWeb.Router do
 
   pipeline :api do
     plug(:accepts, ["json"])
-  end
-
-  scope "/api", C2cWeb do
-    pipe_through :api
-    resources "/currencies", CurrencyController
   end
 
   scope "/api/swagger" do
@@ -65,6 +60,12 @@ defmodule C2cWeb.Router do
     resources("/currencies", CurrencyController)
     resources("/api_currencies", ApiCurrencyController)
     resources("/transactions", TransactionController)
+  end
+
+  # API expose
+  scope "/api", C2cWeb do
+    pipe_through :api
+    resources "/currencies", CurrencyController, only: [:index, :show]
   end
 
   # Other scopes may use custom stacks.

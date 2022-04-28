@@ -109,5 +109,10 @@
     <orderEntry type="library" name="bcrypt_elixir" level="project" />
     <orderEntry type="library" name="comeonin" level="project" />
     <orderEntry type="library" name="elixir_make" level="project" />
+    <orderEntry type="library" name="phoenix_swagger" level="project" />
+    <orderEntry type="library" name="ex_json_schema" level="project" />
+    <orderEntry type="library" name="poison" level="project" />
+    <orderEntry type="library" name="httpoison" level="project" />
+    <orderEntry type="library" name="mix_test_watch" level="project" />
   </component>
 </module>

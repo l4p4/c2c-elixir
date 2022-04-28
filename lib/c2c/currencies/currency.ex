@@ -5,6 +5,7 @@ defmodule C2c.Currencies.Currency do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, only: [:id, :name]}
   schema "currencies" do
     field(:name, :string)
 

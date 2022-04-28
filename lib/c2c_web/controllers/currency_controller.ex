@@ -10,12 +10,51 @@ defmodule C2cWeb.CurrencyController do
   swagger_path :index do
     get("/currencies")
     description("List of currencies")
-    response(code(:ok), "Success")
+    response(200, "Success", Schema.ref(:Currency))
+  end
+
+  swagger_path :show do
+    get("/currencies/{id}")
+    description("Currency")
+
+    parameters do
+      id(:path, :integer, "Currency ID", required: true, example: 1)
+    end
+
+    response(200, "Success", Schema.ref(:CurrencyResponse))
+  end
+
+  def swagger_definitions do
+    %{
+      Currency:
+        swagger_schema do
+          title("Currency")
+
+          properties do
+            name(:string, "", required: true)
+          end
+
+          example(%{
+            id: 1,
+            name: "BRL"
+          })
+        end,
+      CurrenciesResponse:
+        swagger_schema do
+          title("List of currencies")
+          property(:currencies, Schema.array(:Currency), "")
+        end,
+      CurrencyResponse:
+        swagger_schema do
+          title("Currency")
+          property(:currency, Schema.ref(:Currency), "")
+        end
+    }
   end
 
   def index(conn, _params) do
     currencies = Currencies.list_currencies()
-    render(conn, "index.html", currencies: currencies)
+    render(conn, :index, currencies: currencies)
   end
 
   def new(conn, _params) do
@@ -37,7 +76,7 @@ defmodule C2cWeb.CurrencyController do
 
   def show(conn, %{"id" => id}) do
     currency = Currencies.get_currency!(id)
-    render(conn, "show.html", currency: currency)
+    render(conn, :show, currency: currency)
   end
 
   def edit(conn, %{"id" => id}) do
