@@ -1,24 +1,26 @@
-<h1>Listing Currencies</h1>
-
+<h1 class="title">Currencies</h1>
+<span class="bt new"><%= link "New Currency", to: Routes.currency_path(@conn, :new) %></span>
 <table>
   <thead>
     <tr>
       <th>Name</th>
-      <th></th>
+      <th>Action</th>
     </tr>
   </thead>
   <tbody>
 <%= for currency <- @currencies do %>
+<div>
     <tr>
       <td><%= currency.name %></td>
       <td>
-        <span><%= link "Show", to: Routes.currency_path(@conn, :show, currency) %></span>
-        <span><%= link "Edit", to: Routes.currency_path(@conn, :edit, currency) %></span>
-        <span><%= link "Delete", to: Routes.currency_path(@conn, :delete, currency), method: :delete, data: [confirm: "Are you sure?"] %></span>
+        <span class="bt green"><%= link "Show", class: "green", to: Routes.currency_path(@conn, :show, currency) %></span>
+        <span class="bt yellow"><%= link "Edit", to: Routes.currency_path(@conn, :edit, currency) %></span>
+        <span class="bt red"><%= link "Delete", to: Routes.currency_path(@conn, :delete, currency), method: :delete, data: [confirm: "Are you sure?"] %></span>
       </td>
     </tr>
+</div>
 <% end %>
   </tbody>
 </table>
 
-<span><%= link "New Currency", to: Routes.currency_path(@conn, :new) %></span>
+

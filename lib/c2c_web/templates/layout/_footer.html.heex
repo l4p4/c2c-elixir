@@ -1,0 +1,22 @@
+<div class="container center footer">
+    <section class="row">
+        <article class="column">
+            <h2 data-icon="😎">Resources</h2>
+            <ul>
+                <li><%= link("Currencies", to: "/currencies") %></li>
+                <li><%= link("API Currencies", to: "/api_currencies") %></li>
+                <li><%= link("Transactions", to: "/transactions") %></li>
+            </ul>
+        </article>
+        <article class="column">
+            <h2>Help</h2>
+            <ul>
+                <li><%= link("MailBox", to: "/dev/mailbox") %></li>
+                <li><%= link("Swagger API", to: "/api/swagger") %></li>
+                <%= if function_exported?(Routes, :live_dashboard_path, 2) do %>
+                <li><%= link "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home) %></li>
+                <% end %>
+            </ul>
+        </article>
+    </section>
+</div>

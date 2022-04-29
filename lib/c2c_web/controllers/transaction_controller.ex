@@ -168,10 +168,12 @@ defmodule C2cWeb.TransactionController do
         end
     }
   end
-
+require Logger
   def index(conn, _params) do
     transactions = Transactions.list_transactions(conn.assigns.current_user)
-    render(conn, :index, transactions: transactions)
+    currencies = Currencies.list_currencies()
+
+    render(conn, :index, transactions: transactions, currencies: currencies)
   end
 
   def new(conn, _params) do

@@ -1,0 +1,151 @@
+
+.footer {
+    text-align: center;
+    margin-top: 10rem !important;
+}
+
+.footer a {
+    color: #33AAFF;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.footer a:hover {
+  background-color: #33AAFF;
+  color: #FFFFFF;
+}
+
+.logo {
+    top: 10px;
+    left: -60px;
+    background: red;
+    padding: 10px;
+    position: absolute;
+    border-radius: 50px 20px;
+    color: #33AAFF;
+    background: #000000;
+}
+nav {
+    width: 100%;
+}
+
+nav span {
+    color: #33AAFF;
+    text-align:center;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+nav li {
+    float: right;
+}
+
+nav li a {
+    display: block;
+    color: #33AAFF;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+
+}
+
+nav li a:hover {
+    background: #33AAFF;
+    color: #FFFFFF;
+}
+
+.new {
+    float: right;
+}
+
+tr {
+    text-align: center;
+}
+
+tbody tr:hover {
+    color: #FFFFFF !important;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    background: #33AAFF;
+}
+
+tbody tr a {
+    color: #000000 !important;
+}
+
+tbody tr a:hover {
+    color: #FFFFFF;
+}
+
+.title {
+    background: #33AAFF;
+    padding: 2px;
+    padding-right: 10px;
+    color: #FFFFFF;
+    text-align: right;
+}
+
+table tbody tr:nth-child(odd) {
+    background: #F7F7F7;
+}
+
+table tbody tr:nth-child(odd):hover{
+    background: #33AAFF;
+}
+
+.bt a {
+    color: #33AAFF;
+    text-align: center;
+    width: 100%;
+    padding: 1px 6px;
+    text-decoration: none;
+    float: left;
+}
+
+.bt a:hover {
+    background: #33AAFF;
+    color: #FFFFFF !important;
+}
+
+.bt.green a:hover  {
+    background: #50DB1B;
+    color: #FFFFFF !important;
+}
+
+.bt.yellow a:hover  {
+    background: #D8E200;
+    color: #FFFFFF !important;
+}
+
+.bt.red a:hover  {
+    background: #EC1C1C;
+    color: #FFFFFF !important;
+}
+
+table {
+   table-layout:fixed;
+}
+
+tr {
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+}
+
+.ellipsis {
+    width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+li {
+    list-style-type: none;
+}

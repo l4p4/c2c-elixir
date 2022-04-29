@@ -155,7 +155,7 @@ defmodule C2cWeb.CurrencyController do
 
   def new(conn, _params) do
     changeset = Currencies.change_currency(%Currency{})
-    render(conn, "new.html", changeset: changeset)
+    render(conn, :new, changeset: changeset)
   end
 
   def create(conn, %{"currency" => currency_params}) do
@@ -166,7 +166,7 @@ defmodule C2cWeb.CurrencyController do
         |> redirect(to: Routes.currency_path(conn, :show, currency))
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "new.html", changeset: changeset)
+        render(conn, :new, changeset: changeset)
     end
   end
 
@@ -178,7 +178,7 @@ defmodule C2cWeb.CurrencyController do
   def edit(conn, %{"id" => id}) do
     currency = Currencies.get_currency!(id)
     changeset = Currencies.change_currency(currency)
-    render(conn, "edit.html", currency: currency, changeset: changeset)
+    render(conn, :edit, currency: currency, changeset: changeset)
   end
 
   def update(conn, %{"id" => id, "currency" => currency_params}) do
@@ -191,7 +191,7 @@ defmodule C2cWeb.CurrencyController do
         |> redirect(to: Routes.currency_path(conn, :show, currency))
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "edit.html", currency: currency, changeset: changeset)
+        render(conn, :edit, currency: currency, changeset: changeset)
     end
   end
 

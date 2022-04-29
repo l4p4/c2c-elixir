@@ -1,34 +1,29 @@
-<h1>Listing Api currencies</h1>
-
+<h1 class="title">Api currencies</h1>
+<span class="bt new"><%= link "New Api currency", to: Routes.api_currency_path(@conn, :new) %></span>
 <table>
   <thead>
     <tr>
       <th>Url</th>
       <th>Api key</th>
-      <th>Limit</th>
       <th>Remaining conversions</th>
-      <th>Description</th>
-
-      <th></th>
+      <th>Actions</th>
     </tr>
   </thead>
   <tbody>
 <%= for api_currency <- @api_currencies do %>
     <tr>
-      <td><%= api_currency.url %></td>
-      <td><%= api_currency.api_key %></td>
-      <td><%= api_currency.limit %></td>
+      <td class="ellipsis "><%= api_currency.url %></td>
+      <td class="ellipsis "><%= api_currency.api_key %></td>
       <td><%= api_currency.remaining_conversions %></td>
-      <td><%= api_currency.description %></td>
 
       <td>
-        <span><%= link "Show", to: Routes.api_currency_path(@conn, :show, api_currency) %></span>
-        <span><%= link "Edit", to: Routes.api_currency_path(@conn, :edit, api_currency) %></span>
-        <span><%= link "Delete", to: Routes.api_currency_path(@conn, :delete, api_currency), method: :delete, data: [confirm: "Are you sure?"] %></span>
+        <span class="bt green"><%= link "Show", to: Routes.api_currency_path(@conn, :show, api_currency) %></span>
+        <span class="bt yellow"><%= link "Edit", to: Routes.api_currency_path(@conn, :edit, api_currency) %></span>
+        <span class="bt red"><%= link "Delete", to: Routes.api_currency_path(@conn, :delete, api_currency), method: :delete, data: [confirm: "Are you sure?"] %></span>
       </td>
     </tr>
 <% end %>
   </tbody>
 </table>
 
-<span><%= link "New Api currency", to: Routes.api_currency_path(@conn, :new) %></span>
+

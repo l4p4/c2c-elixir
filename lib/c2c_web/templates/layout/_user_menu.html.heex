@@ -1,10 +1,26 @@
-<ul>
-<%= if @current_user do %>
-  <li><%= @current_user.email %></li>
-  <li><%= link "Settings", to: Routes.user_settings_path(@conn, :edit) %></li>
-  <li><%= link "Log out", to: Routes.user_session_path(@conn, :delete), method: :delete %></li>
-<% else %>
-  <li><%= link "Register", to: Routes.user_registration_path(@conn, :new) %></li>
-  <li><%= link "Log in", to: Routes.user_session_path(@conn, :new) %></li>
-<% end %>
-</ul>
+<div class="container">
+  <section class="row">
+    <article class="column">
+      <ul>
+      <li></li>
+      <%= if @current_user do %>
+
+      <li><%= link "Log out", to: Routes.user_session_path(@conn, :delete), method: :delete %></li>
+      <li><%= link "Settings", to: Routes.user_settings_path(@conn, :edit) %></li>
+      <% else %>
+      <li><%= link "Register", to: Routes.user_registration_path(@conn, :new) %></li>
+      <li><%= link "Log in", to: Routes.user_session_path(@conn, :new) %></li>
+      <% end %>
+      </ul>
+    </article>
+    <article class="column">
+      <span><div class="logo"><%= link("C2C", to: "/") %></div>Welcome
+        <%= if @current_user do %>
+            <%= @current_user.email %>
+        <% else %>
+            :)
+         <% end %>
+        </span>
+    </article>
+  </section>
+</div>

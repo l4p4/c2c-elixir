@@ -3,26 +3,23 @@
 <ul>
 
   <li>
-    <strong>API to process convert:</strong>
+    <strong>API:</strong>
     <%= @api_currency.url %>
   </li>
   <li>
-    <strong>Amount from:</strong>
+    <strong>C2C:</strong>
     <%= @currency_from.name %>
-    <%= @transaction.amount_from %>
-  </li>
-
-  <li>
-    <strong>Amount to:</strong>
+    <%= @transaction.amount_from %> =
     <%= @currency_to.name %>
     <%= @transaction.amount_to %>
+    <strong>@</strong>
+    <%= @transaction.inserted_at %>
   </li>
 
   <li>
-    <strong>Fee convert:</strong>
+    <strong>Fee:</strong>
     <%= @transaction.fee_convert %>
   </li>
-
 </ul>
 
 <span><%= link "Edit", to: Routes.transaction_path(@conn, :edit, @transaction) %></span> |
