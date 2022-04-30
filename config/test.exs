@@ -27,7 +27,7 @@ config :c2c, C2cWeb.Endpoint,
 config :c2c, C2c.Mailer, adapter: Swoosh.Adapters.Test
 
 # Print only warnings and errors during test
-config :logger, level: :warn
+config :logger, level: :warn, backends: [:console]
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime

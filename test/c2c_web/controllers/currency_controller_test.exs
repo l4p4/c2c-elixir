@@ -1,16 +1,33 @@
 defmodule C2cWeb.CurrencyControllerTest do
-  use C2cWeb.ConnCase
+  use C2cWeb.ConnCase, async: true
 
+  alias C2c.Accounts
+  alias C2cWeb.UserAuth
   import C2c.CurrenciesFixtures
 
   @create_attrs %{name: "some name"}
   @update_attrs %{name: "some updated name"}
   @invalid_attrs %{name: nil}
 
+  setup %{conn: conn} do
+    user = C2c.AccountsFixtures.user_fixture()
+
+    conn =
+      conn
+      |> Map.replace!(:secret_key_base, C2cWeb.Endpoint.config(:secret_key_base))
+      |> init_test_session(%{})
+
+    user_token = Accounts.generate_user_session_token(user)
+    conn = conn |> put_session(:user_token, user_token) |> UserAuth.fetch_current_user([])
+    currency = currency_fixture()
+
+    %{conn: conn, currency: currency}
+  end
+
   describe "index" do
     test "lists all currencies", %{conn: conn} do
       conn = get(conn, Routes.currency_path(conn, :index))
-      assert html_response(conn, 200) =~ "Listing Currencies"
+      assert html_response(conn, 200) =~ "Currencies"
     end
   end
 
@@ -39,8 +56,6 @@ defmodule C2cWeb.CurrencyControllerTest do
   end
 
   describe "edit currency" do
-    setup [:create_currency]
-
     test "renders form for editing chosen currency", %{conn: conn, currency: currency} do
       conn = get(conn, Routes.currency_path(conn, :edit, currency))
       assert html_response(conn, 200) =~ "Edit Currency"
@@ -48,8 +63,6 @@ defmodule C2cWeb.CurrencyControllerTest do
   end
 
   describe "update currency" do
-    setup [:create_currency]
-
     test "redirects when data is valid", %{conn: conn, currency: currency} do
       conn = put(conn, Routes.currency_path(conn, :update, currency), currency: @update_attrs)
       assert redirected_to(conn) == Routes.currency_path(conn, :show, currency)
@@ -65,8 +78,6 @@ defmodule C2cWeb.CurrencyControllerTest do
   end
 
   describe "delete currency" do
-    setup [:create_currency]
-
     test "deletes chosen currency", %{conn: conn, currency: currency} do
       conn = delete(conn, Routes.currency_path(conn, :delete, currency))
       assert redirected_to(conn) == Routes.currency_path(conn, :index)
@@ -75,10 +86,5 @@ defmodule C2cWeb.CurrencyControllerTest do
         get(conn, Routes.currency_path(conn, :show, currency))
       end)
     end
-  end
-
-  defp create_currency(_) do
-    currency = currency_fixture()
-    %{currency: currency}
   end
 end

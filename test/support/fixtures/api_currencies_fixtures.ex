@@ -7,7 +7,7 @@ defmodule C2c.ApiCurrenciesFixtures do
   @doc """
   Generate a api_currency.
   """
-  def api_currency_fixture(attrs \\ %{}) do
+  def api_currency_fixture(user_id, attrs \\ %{}) do
     {:ok, api_currency} =
       attrs
       |> Enum.into(%{
@@ -15,10 +15,15 @@ defmodule C2c.ApiCurrenciesFixtures do
         description: "some description",
         limit: 42,
         remaining_conversions: 42,
-        url: "some url"
+        url: "some url",
+        user_id: user_id
       })
       |> C2c.ApiCurrencies.create_api_currency()
 
     api_currency
+  end
+
+  def list_api_currencies_fixture(user) do
+    C2c.ApiCurrencies.list_api_currencies(user)
   end
 end

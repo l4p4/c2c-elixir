@@ -168,7 +168,7 @@ defmodule C2cWeb.TransactionController do
         end
     }
   end
-require Logger
+
   def index(conn, _params) do
     transactions = Transactions.list_transactions(conn.assigns.current_user)
     currencies = Currencies.list_currencies()
@@ -201,7 +201,18 @@ require Logger
         |> redirect(to: Routes.transaction_path(conn, :show, transaction))
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :new, changeset: changeset)
+        api_currencies = ApiCurrencies.list_api_currencies(conn.assigns.current_user)
+        currencies = Currencies.list_currencies()
+
+        render(conn, :new,
+          changeset: changeset,
+          transaction: transaction_params,
+          currencies: currencies,
+          api_currencies: api_currencies,
+          selected_currency_from: 0,
+          selected_currency_to: 0,
+          selected_api_currency: 0
+        )
     end
   end
 
@@ -247,7 +258,18 @@ require Logger
         |> redirect(to: Routes.transaction_path(conn, :show, transaction))
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :edit, transaction: transaction, changeset: changeset)
+        currencies = Currencies.list_currencies()
+        api_currencies = ApiCurrencies.list_api_currencies(conn.assigns.current_user)
+
+        render(conn, :edit,
+          transaction: transaction,
+          changeset: changeset,
+          currencies: currencies,
+          api_currencies: api_currencies,
+          selected_currency_from: transaction.currency_from,
+          selected_currency_to: transaction.currency_to,
+          selected_api_currency: transaction.api_currency_id
+        )
     end
   end
 

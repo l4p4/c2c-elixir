@@ -11,10 +11,14 @@ defmodule C2c.CurrenciesFixtures do
     {:ok, currency} =
       attrs
       |> Enum.into(%{
-        name: "some name"
+        name: "some#{Enum.random(0..1000)}"
       })
       |> C2c.Currencies.create_currency()
 
     currency
+  end
+
+  def list_currency_fixture do
+    C2c.Currencies.list_currencies()
   end
 end

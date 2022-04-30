@@ -72,7 +72,9 @@ defmodule C2c.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.deploy": ["esbuild default --minify", "phx.digest"],
-      swagger: ["phx.swagger.generate priv/static/swagger.json --router C2cWeb.Router --endpoint C2cWeb.Endpoint"]
-]
+      swagger: [
+        "phx.swagger.generate priv/static/swagger.json --router C2cWeb.Router --endpoint C2cWeb.Endpoint"
+      ]
+    ]
   end
 end

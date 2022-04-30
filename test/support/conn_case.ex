@@ -36,6 +36,11 @@ defmodule C2cWeb.ConnCase do
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 
+  def register_and_login_user(%{conn: conn}) do
+    user = C2c.AccountsFixtures.user_fixture()
+    %{conn: log_in_user(conn, user), user: user}
+  end
+
   @doc """
   Setup helper that registers and logs in users.
 

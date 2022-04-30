@@ -3,6 +3,10 @@ defmodule C2c.ApiCurrenciesTest do
 
   alias C2c.ApiCurrencies
 
+  setup do
+    %{user: C2c.AccountsFixtures.user_fixture()}
+  end
+
   describe "api_currencies" do
     alias C2c.ApiCurrencies.ApiCurrency
 
@@ -16,23 +20,24 @@ defmodule C2c.ApiCurrenciesTest do
       url: nil
     }
 
-    test "list_api_currencies/0 returns all api_currencies" do
-      api_currency = api_currency_fixture()
-      assert ApiCurrencies.list_api_currencies() == [api_currency]
+    test "list_api_currencies/1 returns all api_currencies", %{user: user} do
+      api_currency = api_currency_fixture(user.id)
+      assert ApiCurrencies.list_api_currencies(user) == [api_currency]
     end
 
-    test "get_api_currency!/1 returns the api_currency with given id" do
-      api_currency = api_currency_fixture()
-      assert ApiCurrencies.get_api_currency!(api_currency.id) == api_currency
+    test "get_api_currency!/2 returns the api_currency with given id", %{user: user} do
+      api_currency = api_currency_fixture(user.id)
+      assert ApiCurrencies.get_api_currency!(user, api_currency.id) == api_currency
     end
 
-    test "create_api_currency/1 with valid data creates a api_currency" do
+    test "create_api_currency/1 with valid data creates a api_currency", %{user: user} do
       valid_attrs = %{
         api_key: "some api_key",
         description: "some description",
         limit: 42,
         remaining_conversions: 42,
-        url: "some url"
+        url: "some url",
+        user_id: user.id
       }
 
       assert {:ok, %ApiCurrency{} = api_currency} = ApiCurrencies.create_api_currency(valid_attrs)
@@ -47,8 +52,8 @@ defmodule C2c.ApiCurrenciesTest do
       assert {:error, %Ecto.Changeset{}} = ApiCurrencies.create_api_currency(@invalid_attrs)
     end
 
-    test "update_api_currency/2 with valid data updates the api_currency" do
-      api_currency = api_currency_fixture()
+    test "update_api_currency/2 with valid data updates the api_currency", %{user: user} do
+      api_currency = api_currency_fixture(user.id)
 
       update_attrs = %{
         api_key: "some updated api_key",
@@ -68,23 +73,26 @@ defmodule C2c.ApiCurrenciesTest do
       assert api_currency.url == "some updated url"
     end
 
-    test "update_api_currency/2 with invalid data returns error changeset" do
-      api_currency = api_currency_fixture()
+    test "update_api_currency/2 with invalid data returns error changeset", %{user: user} do
+      api_currency = api_currency_fixture(user.id)
 
       assert {:error, %Ecto.Changeset{}} =
                ApiCurrencies.update_api_currency(api_currency, @invalid_attrs)
 
-      assert api_currency == ApiCurrencies.get_api_currency!(api_currency.id)
+      assert api_currency == ApiCurrencies.get_api_currency!(user, api_currency.id)
     end
 
-    test "delete_api_currency/1 deletes the api_currency" do
-      api_currency = api_currency_fixture()
+    test "delete_api_currency/1 deletes the api_currency", %{user: user} do
+      api_currency = api_currency_fixture(user.id)
       assert {:ok, %ApiCurrency{}} = ApiCurrencies.delete_api_currency(api_currency)
-      assert_raise Ecto.NoResultsError, fn -> ApiCurrencies.get_api_currency!(api_currency.id) end
+
+      assert_raise Ecto.NoResultsError, fn ->
+        ApiCurrencies.get_api_currency!(user, api_currency.id)
+      end
     end
 
-    test "change_api_currency/1 returns a api_currency changeset" do
-      api_currency = api_currency_fixture()
+    test "change_api_currency/1 returns a api_currency changeset", %{user: user} do
+      api_currency = api_currency_fixture(user.id)
       assert %Ecto.Changeset{} = ApiCurrencies.change_api_currency(api_currency)
     end
   end

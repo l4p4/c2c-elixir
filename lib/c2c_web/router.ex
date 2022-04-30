@@ -51,9 +51,14 @@ defmodule C2cWeb.Router do
   end
 
   scope "/", C2cWeb do
-    pipe_through([:browser, :require_authenticated_user])
+    pipe_through(:browser)
 
     get("/", PageController, :index)
+  end
+
+  scope "/", C2cWeb do
+    pipe_through([:browser, :require_authenticated_user])
+
     resources("/currencies", CurrencyController)
     resources("/api_currencies", ApiCurrencyController)
     resources("/transactions", TransactionController)
