@@ -14,7 +14,6 @@ defmodule C2cWeb.Router do
   end
 
   pipeline :api do
-    plug CORSPlug, origin: "*"
     plug(:accepts, ["json"])
   end
 
@@ -134,7 +133,7 @@ defmodule C2cWeb.Router do
 
   def swagger_info do
     %{
-      schemes: ["http"],
+      schemes: ["https", "http"],
       info: %{
         version: "1.0",
         title: "C2cWeb",
