@@ -17,7 +17,16 @@ defmodule C2cWeb.ApiCurrencyView do
       api_key: api_currency.api_key,
       limit: api_currency.limit,
       remaining_conversions: api_currency.remaining_conversions,
-      description: api_currency.description
+      description: api_currency.description,
+      user_id: api_currency.user_id
+    }
+  end
+
+  def render("error.json", %{message: message}) do
+    %{
+      status: :not_found,
+      data: %{},
+      message: message
     }
   end
 end

@@ -13,9 +13,22 @@ defmodule C2cWeb.TransactionView do
   def render("transaction.json", %{transaction: transaction}) do
     %{
       id: transaction.id,
+      user_id: transaction.user_id,
+      currency_from: transaction.currency_from,
       amount_from: transaction.amount_from,
+      currency_to: transaction.currency_to,
       amount_to: transaction.amount_to,
-      fee_convert: transaction.fee_convert
+      fee_convert: transaction.fee_convert,
+      api_currency_id: transaction.api_currency_id,
+      inserted_at: transaction.inserted_at
+    }
+  end
+
+  def render("error.json", %{message: message}) do
+    %{
+      status: :not_found,
+      data: %{},
+      message: message
     }
   end
 end

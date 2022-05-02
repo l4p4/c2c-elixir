@@ -4,6 +4,7 @@
 - User
 
 mix phx.gen.auth Accounts User users
+mix swagger.gen Accounts User users --no-context
 
 - Currency
 	name

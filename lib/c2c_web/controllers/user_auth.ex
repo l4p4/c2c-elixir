@@ -97,6 +97,23 @@ defmodule C2cWeb.UserAuth do
     assign(conn, :current_user, user)
   end
 
+  @doc """
+  Get user by token from jwt authentication
+  """
+  def fetch_current_user_by_token_jwt(conn, _opts) do
+    user_token = get_token(conn)
+    user = Accounts.get_user_by_session_token(user_token)
+    assign(conn, :current_user, user)
+  end
+
+  @spec get_token(Plug.Conn.t()) :: nil | binary
+  def get_token(conn) do
+    case get_req_header(conn, "authorization") do
+      ["Bearer " <> token] -> token
+      _ -> nil
+    end
+  end
+
   defp ensure_user_token(conn) do
     if user_token = get_session(conn, :user_token) do
       {user_token, conn}

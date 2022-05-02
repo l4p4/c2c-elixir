@@ -17,6 +17,16 @@ config :c2c, C2cWeb.Endpoint,
   pubsub_server: C2c.PubSub,
   live_view: [signing_salt: "oIUIrPm1"]
 
+# Guardian
+config :c2c, C2c.Guardian,
+  issuer: "c2c",
+  secret_key: "Wp+FiImfPic9uUMlDCsqfbppH3JUsYFcI27fhE3wXjpxqVeI2pwGFe+iPA8q/Mpk",
+  ttl: {3, :days}
+
+config :c2c, C2cWeb.AuthAccessPipeline,
+  module: C2c.Guardian,
+  error_handler: C2cWeb.AuthErrorHandler
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails
@@ -77,7 +87,7 @@ if Mix.env() == :dev do
       pre_commit: [
         tasks: [
           {:cmd, "mix clean"},
-          {:cmd, "mix compile --warnings-as-errors"},
+          {:cmd, "mix compile"},
           {:cmd, "mix format"},
           {:cmd, "mix credo --strict"},
           {:cmd, "mix doctor --summary"},

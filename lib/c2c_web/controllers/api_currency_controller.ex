@@ -12,7 +12,7 @@ defmodule C2cWeb.ApiCurrencyController do
     description("List all api_currencies in the database")
     tag("ApiCurrencys")
     produces("application/json")
-    security([%{Bearer: []}])
+    security([%{Bearer: []}, %{"petstore_auth" => ["write:users", "read:users"]}])
 
     response(200, "OK", Schema.ref(:ApiCurrencysResponse),
       example: %{
@@ -23,7 +23,8 @@ defmodule C2cWeb.ApiCurrencyController do
             description: "some description",
             limit: 42,
             remaining_conversions: 42,
-            url: "some url"
+            url: "some url",
+            user_id: 2
           }
         ]
       }
@@ -59,7 +60,8 @@ defmodule C2cWeb.ApiCurrencyController do
           description: "some description",
           limit: 42,
           remaining_conversions: 42,
-          url: "some url"
+          url: "some url",
+          user_id: 2
         }
       }
     )
@@ -82,7 +84,8 @@ defmodule C2cWeb.ApiCurrencyController do
           description: "some description",
           limit: 42,
           remaining_conversions: 42,
-          url: "some url"
+          url: "some url",
+          user_id: 2
         }
       }
     )
@@ -107,7 +110,8 @@ defmodule C2cWeb.ApiCurrencyController do
             description: "some description",
             limit: 42,
             remaining_conversions: 42,
-            url: "some url"
+            url: "some url",
+            user_id: 2
           }
         }
       )
@@ -121,7 +125,8 @@ defmodule C2cWeb.ApiCurrencyController do
           description: "some description",
           limit: 42,
           remaining_conversions: 42,
-          url: "some url"
+          url: "some url",
+          user_id: 2
         }
       }
     )
@@ -148,9 +153,10 @@ defmodule C2cWeb.ApiCurrencyController do
             id(:integer, "ApiCurrency ID")
             api_key(:string, "ApiCurrency api_key")
             description(:string, "ApiCurrency description")
-            limit(:string, "ApiCurrency limit")
-            remaining_conversions(:string, "ApiCurrency remaining_conversions")
+            limit(:integer, "ApiCurrency limit")
+            remaining_conversions(:integer, "ApiCurrency remaining_conversions")
             url(:string, "ApiCurrency url")
+            user_id(:integer, "ApiCurrency user_id")
           end
 
           example(%{
@@ -159,7 +165,8 @@ defmodule C2cWeb.ApiCurrencyController do
             description: "some description",
             limit: 42,
             remaining_conversions: 42,
-            url: "some url"
+            url: "some url",
+            user_id: 2
           })
         end,
       ApiCurrencyRequest:
@@ -193,61 +200,136 @@ defmodule C2cWeb.ApiCurrencyController do
     }
   end
 
+  action_fallback(C2cWeb.FallbackController)
+
   def index(conn, _params) do
-    api_currencies = ApiCurrencies.list_api_currencies(conn.assigns.current_user)
-    render(conn, :index, api_currencies: api_currencies)
+    if Guardian.Plug.authenticated?(conn) do
+      render(conn, "index.json",
+        api_currencies: ApiCurrencies.list_api_currencies(Guardian.Plug.current_resource(conn))
+      )
+    else
+      render(conn, "index.html",
+        api_currencies: ApiCurrencies.list_api_currencies(conn.assigns.current_user)
+      )
+    end
   end
 
   def new(conn, _params) do
     changeset = ApiCurrencies.change_api_currency(%ApiCurrency{})
-    render(conn, :new, changeset: changeset)
+
+    if Guardian.Plug.authenticated?(conn) do
+      render(conn, "new.json", changeset: changeset)
+    else
+      render(conn, "new.html", changeset: changeset)
+    end
   end
 
   def create(conn, %{"api_currency" => api_currency_params}) do
-    api_currency_params = Map.put(api_currency_params, "user_id", conn.assigns.current_user.id)
+    if Guardian.Plug.authenticated?(conn) do
+      api_currency_params =
+        Map.put(api_currency_params, "user_id", Guardian.Plug.current_resource(conn).id)
 
-    case ApiCurrencies.create_api_currency(api_currency_params) do
-      {:ok, api_currency} ->
-        conn
-        |> put_flash(:info, "Api currency created successfully.")
-        |> redirect(to: Routes.api_currency_path(conn, :show, api_currency))
+      case ApiCurrencies.create_api_currency(api_currency_params) do
+        {:ok, api_currency} ->
+          conn
+          |> put_status(:created)
+          |> redirect(to: Routes.api_currency_path(conn, :show, api_currency))
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :new, changeset: changeset)
+        {:error, %Ecto.Changeset{} = _changeset} ->
+          conn
+          |> put_status(400)
+          |> render("error.json", message: "ApiCurrency could not be created, malformed data")
+      end
+    else
+      api_currency_params = Map.put(api_currency_params, "user_id", conn.assigns.current_user.id)
+
+      case ApiCurrencies.create_api_currency(api_currency_params) do
+        {:ok, api_currency} ->
+          conn
+          |> put_flash(:info, "Api currency created successfully.")
+          |> redirect(to: Routes.api_currency_path(conn, :show, api_currency))
+
+        {:error, %Ecto.Changeset{} = changeset} ->
+          render(conn, "new.html", changeset: changeset)
+      end
     end
   end
 
   def show(conn, %{"id" => id}) do
-    api_currency = ApiCurrencies.get_api_currency!(conn.assigns.current_user, id)
-    render(conn, :show, api_currency: api_currency)
+    if Guardian.Plug.authenticated?(conn) do
+      render(conn, "show.json",
+        api_currency: ApiCurrencies.get_api_currency!(Guardian.Plug.current_resource(conn), id)
+      )
+    else
+      render(conn, "show.html",
+        api_currency: ApiCurrencies.get_api_currency!(conn.assigns.current_user, id)
+      )
+    end
   end
 
   def edit(conn, %{"id" => id}) do
-    api_currency = ApiCurrencies.get_api_currency!(conn.assigns.current_user, id)
-    changeset = ApiCurrencies.change_api_currency(api_currency)
-    render(conn, :edit, api_currency: api_currency, changeset: changeset)
+    if Guardian.Plug.authenticated?(conn) do
+      api_currency = ApiCurrencies.get_api_currency!(Guardian.Plug.current_resource(conn), id)
+
+      render(conn, "edit.json",
+        api_currency: api_currency,
+        changeset: ApiCurrencies.change_api_currency(api_currency)
+      )
+    else
+      api_currency = ApiCurrencies.get_api_currency!(conn.assigns.current_user, id)
+
+      render(conn, "edit.html",
+        api_currency: api_currency,
+        changeset: ApiCurrencies.change_api_currency(api_currency)
+      )
+    end
   end
 
   def update(conn, %{"id" => id, "api_currency" => api_currency_params}) do
-    api_currency = ApiCurrencies.get_api_currency!(conn.assigns.current_user, id)
+    if Guardian.Plug.authenticated?(conn) do
+      api_currency = ApiCurrencies.get_api_currency!(Guardian.Plug.current_resource(conn), id)
 
-    case ApiCurrencies.update_api_currency(api_currency, api_currency_params) do
-      {:ok, api_currency} ->
-        conn
-        |> put_flash(:info, "Api currency updated successfully.")
-        |> redirect(to: Routes.api_currency_path(conn, :show, api_currency))
+      case ApiCurrencies.update_api_currency(api_currency, api_currency_params) do
+        {:ok, api_currency} ->
+          conn
+          |> put_status(200)
+          |> redirect(to: Routes.api_currency_path(conn, :show, api_currency))
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :edit, api_currency: api_currency, changeset: changeset)
+        {:error, %Ecto.Changeset{} = _changeset} ->
+          conn
+          |> put_status(400)
+          |> render("error.json", message: "ApiCurrency could not be updated. Invalid data type.")
+      end
+    else
+      api_currency = ApiCurrencies.get_api_currency!(conn.assigns.current_user, id)
+
+      case ApiCurrencies.update_api_currency(api_currency, api_currency_params) do
+        {:ok, api_currency} ->
+          conn
+          |> put_flash(:info, "Api currency updated successfully.")
+          |> redirect(to: Routes.api_currency_path(conn, :show, api_currency))
+
+        {:error, %Ecto.Changeset{} = changeset} ->
+          render(conn, "edit.html", api_currency: api_currency, changeset: changeset)
+      end
     end
   end
 
   def delete(conn, %{"id" => id}) do
-    api_currency = ApiCurrencies.get_api_currency!(conn.assigns.current_user, id)
-    {:ok, _api_currency} = ApiCurrencies.delete_api_currency(api_currency)
+    if Guardian.Plug.authenticated?(conn) do
+      api_currency = ApiCurrencies.get_api_currency!(Guardian.Plug.current_resource(conn), id)
+      {:ok, _api_currency} = ApiCurrencies.delete_api_currency(api_currency)
 
-    conn
-    |> put_flash(:info, "Api currency deleted successfully.")
-    |> redirect(to: Routes.api_currency_path(conn, :index))
+      conn
+      |> put_status(200)
+      |> redirect(to: Routes.api_currency_path(conn, :index))
+    else
+      api_currency = ApiCurrencies.get_api_currency!(conn.assigns.current_user, id)
+      {:ok, _api_currency} = ApiCurrencies.delete_api_currency(api_currency)
+
+      conn
+      |> put_flash(:info, "Transaction deleted successfully.")
+      |> redirect(to: Routes.api_currency_path(conn, :index))
+    end
   end
 end

@@ -17,59 +17,32 @@ defmodule C2cWeb.Router do
     plug(:accepts, ["json"])
   end
 
-  scope "/api/swagger" do
-    forward("/", PhoenixSwagger.Plug.SwaggerUI,
-      otp_app: :c2c,
-      swagger_file: "swagger.json"
-    )
+  # JWT API Authenticate
+  pipeline :jwt_authenticated do
+    plug(C2cWeb.AuthAccessPipeline)
   end
 
-  def swagger_info do
-    %{
-      schemes: ["http"],
-      info: %{
-        version: "1.0",
-        title: "C2cWeb",
-        description: "API Documentation for C2cWeb v1",
-        termsOfService: "Open for public",
-        contact: %{
-          name: "Larry Pavanery",
-          email: "pavanery@gmail.com"
-        }
-      },
-      securityDefinitions: %{
-        Bearer: %{
-          type: "apiKey",
-          name: "Authorization",
-          description: "API Token must be provided via `Authorization: Bearer ` header",
-          in: "header"
-        }
-      },
-      consumes: ["application/json"],
-      produces: ["application/json"]
-    }
+  scope "/api", C2cWeb, as: :api do
+    pipe_through(:jwt_authenticated)
+
+    resources("/api_currencies", ApiCurrencyController)
+    resources("/transactions", TransactionController)
+    get("/my_session", Api.SessionController, :show)
   end
 
+  scope "/api", C2cWeb, as: :api do
+    pipe_through(:api)
+
+    post("/sign_in", Api.SessionController, :create)
+    resources("/api_currencies", ApiCurrencyController)
+    resources("/transactions", TransactionController)
+  end
+
+  # Free access index page
   scope "/", C2cWeb do
     pipe_through(:browser)
 
     get("/", PageController, :index)
-  end
-
-  scope "/", C2cWeb do
-    pipe_through([:browser, :require_authenticated_user])
-
-    resources("/currencies", CurrencyController)
-    resources("/api_currencies", ApiCurrencyController)
-    resources("/transactions", TransactionController)
-  end
-
-  # API expose
-  scope "/api", C2cWeb do
-    pipe_through([:api])
-    resources("/currencies", CurrencyController)
-    resources("/api_currencies", ApiCurrencyController)
-    resources("/transactions", TransactionController)
   end
 
   # Other scopes may use custom stacks.
@@ -106,6 +79,16 @@ defmodule C2cWeb.Router do
     end
   end
 
+  ## Control browser authenticated
+
+  scope "/", C2cWeb do
+    pipe_through([:browser, :require_authenticated_user])
+
+    resources("/currencies", CurrencyController)
+    resources("/api_currencies", ApiCurrencyController)
+    resources("/transactions", TransactionController)
+  end
+
   ## Authentication routes
 
   scope "/", C2cWeb do
@@ -137,5 +120,39 @@ defmodule C2cWeb.Router do
     post("/users/confirm", UserConfirmationController, :create)
     get("/users/confirm/:token", UserConfirmationController, :edit)
     post("/users/confirm/:token", UserConfirmationController, :update)
+  end
+
+  # Swagger
+  scope "/api/swagger" do
+    forward("/", PhoenixSwagger.Plug.SwaggerUI,
+      otp_app: :c2c,
+      swagger_file: "swagger.json"
+    )
+  end
+
+  def swagger_info do
+    %{
+      schemes: ["http"],
+      info: %{
+        version: "1.0",
+        title: "C2cWeb",
+        description: "API Documentation for C2cWeb v1",
+        termsOfService: "Open for public",
+        contact: %{
+          name: "Larry Pavanery",
+          email: "pavanery@gmail.com"
+        }
+      },
+      securityDefinitions: %{
+        Bearer: %{
+          type: "apiKey",
+          name: "Authorization",
+          description: "API Token must be provided via `Authorization: Bearer ` header",
+          in: "header"
+        }
+      },
+      consumes: ["application/json"],
+      produces: ["application/json"]
+    }
   end
 end

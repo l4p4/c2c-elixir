@@ -20,10 +20,14 @@ defmodule C2cWeb.TransactionController do
       example: %{
         data: [
           %{
-            id: 1,
+            id: 123,
+            currency_from: 1,
             amount_from: 120.5,
+            currency_to: 1,
             amount_to: 120.5,
-            fee_convert: 120.5
+            fee_convert: 1,
+            user_id: 2,
+            inserted_at: "2022-05-01T23:22:20"
           }
         ]
       }
@@ -41,17 +45,27 @@ defmodule C2cWeb.TransactionController do
 
     parameter(:transaction, :body, Schema.ref(:TransactionRequest), "The transaction details",
       example: %{
-        transaction: %{amount_from: 120.5, amount_to: 120.5, fee_convert: 120.5}
+        transaction: %{
+          currency_from: 1,
+          amount_from: 120.5,
+          currency_to: 1,
+          amount_to: 120.5,
+          fee_convert: 1
+        }
       }
     )
 
     response(201, "Transaction created OK", Schema.ref(:TransactionResponse),
       example: %{
         data: %{
-          id: 1,
+          id: 123,
+          currency_from: 1,
           amount_from: 120.5,
+          currency_to: 1,
           amount_to: 120.5,
-          fee_convert: 120.5
+          fee_convert: 1,
+          user_id: 2,
+          inserted_at: "2022-05-01T23:22:20"
         }
       }
     )
@@ -70,9 +84,13 @@ defmodule C2cWeb.TransactionController do
       example: %{
         data: %{
           id: 123,
+          currency_from: 1,
           amount_from: 120.5,
+          currency_to: 1,
           amount_to: 120.5,
-          fee_convert: 120.5
+          fee_convert: 1,
+          user_id: 2,
+          inserted_at: "2022-05-01T23:22:20"
         }
       }
     )
@@ -92,7 +110,16 @@ defmodule C2cWeb.TransactionController do
 
       transaction(:body, Schema.ref(:TransactionRequest), "The transaction details",
         example: %{
-          transaction: %{amount_from: 120.5, amount_to: 120.5, fee_convert: 120.5}
+          transaction: %{
+            id: 123,
+            currency_from: 1,
+            amount_from: 120.5,
+            currency_to: 1,
+            amount_to: 120.5,
+            fee_convert: 1,
+            user_id: 2,
+            inserted_at: "2022-05-01T23:22:20"
+          }
         }
       )
     end
@@ -100,10 +127,14 @@ defmodule C2cWeb.TransactionController do
     response(200, "Updated Successfully", Schema.ref(:TransactionResponse),
       example: %{
         data: %{
-          id: 3,
+          id: 123,
+          currency_from: 1,
           amount_from: 120.5,
+          currency_to: 1,
           amount_to: 120.5,
-          fee_convert: 120.5
+          fee_convert: 1,
+          user_id: 2,
+          inserted_at: "2022-05-01T23:22:20"
         }
       }
     )
@@ -128,16 +159,26 @@ defmodule C2cWeb.TransactionController do
 
           properties do
             id(:integer, "Transaction ID")
-            amount_from(:string, "Transaction amount_from")
-            amount_to(:string, "Transaction amount_to")
-            fee_convert(:string, "Transaction fee_convert")
+            currency_from(:integer, "Transaction currency_from")
+            amount_from(:double, "Transaction amount_from")
+            currency_to(:integer, "Transaction currency_to")
+            amount_to(:double, "Transaction amount_to")
+            fee_convert(:double, "Transaction fee_convert")
+            api_currency_id(:string, "Transaction api_currency_id")
+            user_id(:integer, "Transaction user_id")
+            inserted_at(:string, "Transaction inserted_at")
           end
 
           example(%{
             id: 123,
+            currency_from: 1,
             amount_from: 120.5,
+            currency_to: 1,
             amount_to: 120.5,
-            fee_convert: 120.5
+            fee_convert: 1,
+            user_id: 2,
+            api_currency_id: 1,
+            inserted_at: "2022-05-01T23:22:20"
           })
         end,
       TransactionRequest:
@@ -148,9 +189,12 @@ defmodule C2cWeb.TransactionController do
 
           example(%{
             transaction: %{
+              currency_from: 1,
               amount_from: 120.5,
+              currency_to: 1,
               amount_to: 120.5,
-              fee_convert: 120.5
+              fee_convert: 1,
+              api_currency_id: 1
             }
           })
         end,
@@ -170,115 +214,210 @@ defmodule C2cWeb.TransactionController do
   end
 
   def index(conn, _params) do
-    transactions = Transactions.list_transactions(conn.assigns.current_user)
-    currencies = Currencies.list_currencies()
-
-    render(conn, :index, transactions: transactions, currencies: currencies)
+    if Guardian.Plug.authenticated?(conn) do
+      render(conn, "index.json",
+        transactions: Transactions.list_transactions(Guardian.Plug.current_resource(conn)),
+        user_id: Guardian.Plug.current_resource(conn).id
+      )
+    else
+      render(conn, "index.html",
+        transactions: Transactions.list_transactions(conn.assigns.current_user),
+        currencies: Currencies.list_currencies()
+      )
+    end
   end
 
   def new(conn, _params) do
     changeset = Transactions.change_transaction(%Transaction{})
     currencies = Currencies.list_currencies()
-    api_currencies = ApiCurrencies.list_api_currencies(conn.assigns.current_user)
 
-    render(conn, :new,
-      changeset: changeset,
-      currencies: currencies,
-      api_currencies: api_currencies,
-      selected_currency_from: 0,
-      selected_currency_to: 0,
-      selected_api_currency: 0
-    )
+    if Guardian.Plug.authenticated?(conn) do
+      api_currencies = ApiCurrencies.list_api_currencies(Guardian.Plug.current_resource(conn))
+
+      render(conn, "new.json",
+        changeset: changeset,
+        currencies: currencies,
+        api_currencies: api_currencies,
+        selected_currency_from: 0,
+        selected_currency_to: 0,
+        selected_api_currency: 0
+      )
+    else
+      api_currencies = ApiCurrencies.list_api_currencies(conn.assigns.current_user)
+
+      render(conn, "new.html",
+        changeset: changeset,
+        currencies: currencies,
+        api_currencies: api_currencies,
+        selected_currency_from: 0,
+        selected_currency_to: 0,
+        selected_api_currency: 0
+      )
+    end
   end
 
   def create(conn, %{"transaction" => transaction_params}) do
-    transaction_params = Map.put(transaction_params, "user_id", conn.assigns.current_user.id)
+    if Guardian.Plug.authenticated?(conn) do
+      transaction_params =
+        Map.put(transaction_params, "user_id", Guardian.Plug.current_resource(conn).id)
 
-    case Transactions.create_transaction(transaction_params) do
-      {:ok, transaction} ->
-        conn
-        |> put_flash(:info, "Transaction created successfully.")
-        |> redirect(to: Routes.transaction_path(conn, :show, transaction))
+      case Transactions.create_transaction(transaction_params) do
+        {:ok, transaction} ->
+          conn
+          |> put_status(:created)
+          |> redirect(to: Routes.transaction_path(conn, :show, transaction))
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        api_currencies = ApiCurrencies.list_api_currencies(conn.assigns.current_user)
-        currencies = Currencies.list_currencies()
+        {:error, %Ecto.Changeset{} = _changeset} ->
+          conn
+          |> put_status(400)
+          |> render("error.json", message: "Transaction could not be created, malformed data")
+      end
+    else
+      transaction_params = Map.put(transaction_params, "user_id", conn.assigns.current_user.id)
 
-        render(conn, :new,
-          changeset: changeset,
-          transaction: transaction_params,
-          currencies: currencies,
-          api_currencies: api_currencies,
-          selected_currency_from: 0,
-          selected_currency_to: 0,
-          selected_api_currency: 0
-        )
+      case Transactions.create_transaction(transaction_params) do
+        {:ok, transaction} ->
+          conn
+          |> put_flash(:info, "Transaction created successfully.")
+          |> redirect(to: Routes.transaction_path(conn, :show, transaction))
+
+        {:error, %Ecto.Changeset{} = changeset} ->
+          api_currencies = ApiCurrencies.list_api_currencies(conn.assigns.current_user)
+          currencies = Currencies.list_currencies()
+
+          render(conn, "new.html",
+            changeset: changeset,
+            transaction: transaction_params,
+            currencies: currencies,
+            api_currencies: api_currencies,
+            selected_currency_from: 0,
+            selected_currency_to: 0,
+            selected_api_currency: 0
+          )
+      end
     end
   end
 
   def show(conn, %{"id" => id}) do
-    transaction = Transactions.get_transaction!(conn.assigns.current_user, id)
-    api_currency = ApiCurrencies.get_api_currency_by_id!(transaction.api_currency_id)
-    currency_from = Currencies.get_currency!(transaction.currency_from)
-    currency_to = Currencies.get_currency!(transaction.currency_to)
+    if Guardian.Plug.authenticated?(conn) do
+      transaction = Transactions.get_transaction!(Guardian.Plug.current_resource(conn), id)
+      api_currency = ApiCurrencies.get_api_currency_by_id!(transaction.api_currency_id)
+      currency_from = Currencies.get_currency!(transaction.currency_from)
+      currency_to = Currencies.get_currency!(transaction.currency_to)
 
-    render(conn, :show,
-      transaction: transaction,
-      api_currency: api_currency,
-      currency_from: currency_from,
-      currency_to: currency_to
-    )
+      render(conn, "show.json",
+        transaction: transaction,
+        api_currency: api_currency,
+        currency_from: currency_from,
+        currency_to: currency_to
+      )
+    else
+      transaction = Transactions.get_transaction!(conn.assigns.current_user, id)
+      api_currency = ApiCurrencies.get_api_currency_by_id!(transaction.api_currency_id)
+      currency_from = Currencies.get_currency!(transaction.currency_from)
+      currency_to = Currencies.get_currency!(transaction.currency_to)
+
+      render(conn, "show.html",
+        transaction: transaction,
+        api_currency: api_currency,
+        currency_from: currency_from,
+        currency_to: currency_to
+      )
+    end
   end
 
   def edit(conn, %{"id" => id}) do
-    transaction = Transactions.get_transaction!(conn.assigns.current_user, id)
-    changeset = Transactions.change_transaction(transaction)
+    if Guardian.Plug.authenticated?(conn) do
+      transaction = Transactions.get_transaction!(Guardian.Plug.current_resource(conn), id)
+      changeset = Transactions.change_transaction(transaction)
 
-    currencies = Currencies.list_currencies()
-    api_currencies = ApiCurrencies.list_api_currencies(conn.assigns.current_user)
+      currencies = Currencies.list_currencies()
+      api_currencies = ApiCurrencies.list_api_currencies(Guardian.Plug.current_resource(conn))
 
-    render(conn, :edit,
-      transaction: transaction,
-      changeset: changeset,
-      currencies: currencies,
-      api_currencies: api_currencies,
-      selected_currency_from: transaction.currency_from,
-      selected_currency_to: transaction.currency_to,
-      selected_api_currency: transaction.api_currency_id
-    )
+      render(conn, "edit.json",
+        transaction: transaction,
+        changeset: changeset,
+        currencies: currencies,
+        api_currencies: api_currencies,
+        selected_currency_from: transaction.currency_from,
+        selected_currency_to: transaction.currency_to,
+        selected_api_currency: transaction.api_currency_id
+      )
+    else
+      transaction = Transactions.get_transaction!(conn.assigns.current_user, id)
+      changeset = Transactions.change_transaction(transaction)
+
+      currencies = Currencies.list_currencies()
+      api_currencies = ApiCurrencies.list_api_currencies(conn.assigns.current_user)
+
+      render(conn, "edit.html",
+        transaction: transaction,
+        changeset: changeset,
+        currencies: currencies,
+        api_currencies: api_currencies,
+        selected_currency_from: transaction.currency_from,
+        selected_currency_to: transaction.currency_to,
+        selected_api_currency: transaction.api_currency_id
+      )
+    end
   end
 
   def update(conn, %{"id" => id, "transaction" => transaction_params}) do
-    transaction = Transactions.get_transaction!(conn.assigns.current_user, id)
+    if Guardian.Plug.authenticated?(conn) do
+      transaction = Transactions.get_transaction!(Guardian.Plug.current_resource(conn), id)
 
-    case Transactions.update_transaction(transaction, transaction_params) do
-      {:ok, transaction} ->
-        conn
-        |> put_flash(:info, "Transaction updated successfully.")
-        |> redirect(to: Routes.transaction_path(conn, :show, transaction))
+      case Transactions.update_transaction(transaction, transaction_params) do
+        {:ok, transaction} ->
+          conn
+          |> put_status(200)
+          |> redirect(to: Routes.transaction_path(conn, :show, transaction))
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        currencies = Currencies.list_currencies()
-        api_currencies = ApiCurrencies.list_api_currencies(conn.assigns.current_user)
+        {:error, %Ecto.Changeset{} = _changeset} ->
+          conn
+          |> put_status(400)
+          |> render("error.json", message: "Transaction could not be updated. Invalid data type.")
+      end
+    else
+      transaction = Transactions.get_transaction!(conn.assigns.current_user, id)
 
-        render(conn, :edit,
-          transaction: transaction,
-          changeset: changeset,
-          currencies: currencies,
-          api_currencies: api_currencies,
-          selected_currency_from: transaction.currency_from,
-          selected_currency_to: transaction.currency_to,
-          selected_api_currency: transaction.api_currency_id
-        )
+      case Transactions.update_transaction(transaction, transaction_params) do
+        {:ok, transaction} ->
+          conn
+          |> put_flash(:info, "Transaction updated successfully.")
+          |> redirect(to: Routes.transaction_path(conn, :show, transaction))
+
+        {:error, %Ecto.Changeset{} = changeset} ->
+          currencies = Currencies.list_currencies()
+          api_currencies = ApiCurrencies.list_api_currencies(conn.assigns.current_user)
+
+          render(conn, "edit.html",
+            transaction: transaction,
+            changeset: changeset,
+            currencies: currencies,
+            api_currencies: api_currencies,
+            selected_currency_from: transaction.currency_from,
+            selected_currency_to: transaction.currency_to,
+            selected_api_currency: transaction.api_currency_id
+          )
+      end
     end
   end
 
   def delete(conn, %{"id" => id}) do
-    transaction = Transactions.get_transaction!(conn.assigns.current_user, id)
-    {:ok, _transaction} = Transactions.delete_transaction(transaction)
+    if Guardian.Plug.authenticated?(conn) do
+      transaction = Transactions.get_transaction!(Guardian.Plug.current_resource(conn), id)
+      {:ok, _transaction} = Transactions.delete_transaction(transaction)
 
-    conn
-    |> put_flash(:info, "Transaction deleted successfully.")
-    |> redirect(to: Routes.transaction_path(conn, :index))
+      conn
+      |> put_status(200)
+      |> redirect(to: Routes.transaction_path(conn, :index))
+    else
+      transaction = Transactions.get_transaction!(conn.assigns.current_user, id)
+      {:ok, _transaction} = Transactions.delete_transaction(transaction)
+
+      conn
+      |> put_flash(:info, "Transaction deleted successfully.")
+      |> redirect(to: Routes.transaction_path(conn, :index))
+    end
   end
 end

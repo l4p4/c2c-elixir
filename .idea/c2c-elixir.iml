@@ -114,5 +114,14 @@
     <orderEntry type="library" name="poison" level="project" />
     <orderEntry type="library" name="httpoison" level="project" />
     <orderEntry type="library" name="mix_test_watch" level="project" />
+    <orderEntry type="library" name="cors_plug" level="project" />
+    <orderEntry type="library" name="earmark" level="project" />
+    <orderEntry type="library" name="guardian" level="project" />
+    <orderEntry type="library" name="jose" level="project" />
+    <orderEntry type="library" name="jsone" level="project" />
+    <orderEntry type="library" name="jsx" level="project" />
+    <orderEntry type="library" name="libdecaf" level="project" />
+    <orderEntry type="library" name="libsodium" level="project" />
+    <orderEntry type="library" name="ojson" level="project" />
   </component>
 </module>
