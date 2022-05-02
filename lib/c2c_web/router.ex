@@ -36,6 +36,7 @@ defmodule C2cWeb.Router do
     post("/sign_in", Api.SessionController, :create)
     resources("/api_currencies", ApiCurrencyController)
     resources("/transactions", TransactionController)
+    resources("/currencies", CurrencyController)
   end
 
   # Free access index page
