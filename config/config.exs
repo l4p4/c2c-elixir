@@ -80,7 +80,7 @@ if Mix.env() == :dev do
     auto_install: true,
     verbose: true,
     branches: [
-      whitelist: ["master", "feature*"]
+      whitelist: ["master", "feature*", "fix*"]
       #      blacklist: ["master"]
     ],
     hooks: [
