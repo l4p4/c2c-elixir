@@ -18,11 +18,11 @@ defmodule C2cWeb.Api.SessionController do
     parameter(:currency, :body, Schema.ref(:SessionRequest), "The session details",
       example: %{
         email: "admin@admin",
-        password: "supersecret"
+        password: "supersecretadmin"
       }
     )
 
-    response(201, "JWT token created OK", Schema.ref(:CurrencyResponse),
+    response(201, "JWT token created OK", Schema.ref(:SessionResponse),
       example: %{
         data: %{
           email: "admin@admin",
@@ -64,7 +64,7 @@ defmodule C2cWeb.Api.SessionController do
       Session:
         swagger_schema do
           title("Session")
-          description("A session JWT token created by user")
+          description("A session JWT token created by email/password")
 
           properties do
             email(:string, "Session email")
@@ -81,29 +81,39 @@ defmodule C2cWeb.Api.SessionController do
           title("SessionRequest")
           description("POST body for get JWT token")
           property(:session, Schema.ref(:Session), "The session details")
-
-          example(%{
-            email: "admin@admin",
-            password: "supersecret"
-          })
         end,
-      SessionReponse:
+      SessionResponse:
         swagger_schema do
           title("SessionResponse")
-          description("Response schema for JWT token")
-          property(:data, Schema.ref(:Session), "The session details")
+          description("A JWT token created by email/password")
+
+          properties do
+            email(:string, "Session email")
+            token(:string, "JWT token")
+          end
+
+          example(%{
+            data: %{
+              email: "admin@admin",
+              token:
+                "eyJhbGciOiJIUzUxMinR5cCI6IkpXVCJ9.eyJhdWQiOiJjMmMiLCJleHAiOjE2NTE3MDk5NTksImlhdCI6MTY1MTQoiYzJjIiwianRpIjoiZGViYmM0NWUtM2Y5Mi00MzUwLWE5YzQtNzQ1NmRhOGUzZWQ2IiwibmJmIjoxNjUxNDUwNzU4LCJzdWIiOiIxIiwidHlwIjoiYWNjZXNzIn0.9jBM_UGzJnZ360nGftB7NZh_4_VJCyiLOb25xl3Gxu87OPARurwhSBREzunCr-K7fKp6EQ"
+            },
+            message:
+              "You are successfully logged in! Add this token to authorization header to make authorized requests.",
+            status: "ok"
+          })
         end
     }
   end
 
-  def create(conn, %{"email" => nil}) do
+  def create(conn, %{"session" => %{"email" => nil}}) do
     conn
     |> put_status(401)
     |> render("error.json", message: "User could not be authenticated")
   end
 
-  def create(conn, %{"email" => email, "password" => password}) do
-    case Accounts.get_user_by_email_and_password(email, password) do
+  def create(conn, %{"session" => session}) do
+    case Accounts.get_user_by_email_and_password(session["email"], session["password"]) do
       %User{} = user ->
         {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user, %{})
 

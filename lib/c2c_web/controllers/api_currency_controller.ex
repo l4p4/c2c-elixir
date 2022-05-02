@@ -12,7 +12,7 @@ defmodule C2cWeb.ApiCurrencyController do
     description("List all api_currencies in the database")
     tag("ApiCurrencys")
     produces("application/json")
-    security([%{Bearer: []}, %{"petstore_auth" => ["write:users", "read:users"]}])
+    security([%{Bearer: []}])
 
     response(200, "OK", Schema.ref(:ApiCurrencysResponse),
       example: %{
@@ -233,7 +233,7 @@ defmodule C2cWeb.ApiCurrencyController do
         {:ok, api_currency} ->
           conn
           |> put_status(:created)
-          |> redirect(to: Routes.api_currency_path(conn, :show, api_currency))
+          |> render("show.json", api_currency: api_currency)
 
         {:error, %Ecto.Changeset{} = _changeset} ->
           conn

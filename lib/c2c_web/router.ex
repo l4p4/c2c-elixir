@@ -27,6 +27,7 @@ defmodule C2cWeb.Router do
 
     resources("/api_currencies", ApiCurrencyController)
     resources("/transactions", TransactionController)
+    resources("/currencies", CurrencyController)
     get("/my_session", Api.SessionController, :show)
   end
 

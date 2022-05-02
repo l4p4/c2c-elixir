@@ -10,15 +10,15 @@ defmodule C2cWeb.Api.SessionControllerTest do
 
   describe "POST /api/session" do
     test "with no credentials user can't login", %{conn: conn} do
-      conn = post(conn, Routes.api_session_path(conn, :create), email: nil, password: nil)
+      conn = post(conn, Routes.api_session_path(conn, :create), %{session: %{email: nil, password: nil}})
       assert %{"message" => "User could not be authenticated"} = json_response(conn, 401)
     end
 
     test "with invalid password user cant login", %{conn: conn, user: user} do
       conn =
         post(conn, Routes.api_session_path(conn, :create),
-          email: user.email,
-          password: "wrongpass"
+          %{session: %{ email: user.email,
+          password: "wrongpass" }}
         )
 
       assert %{"message" => "User could not be authenticated"} = json_response(conn, 401)
@@ -27,8 +27,8 @@ defmodule C2cWeb.Api.SessionControllerTest do
     test "with valid password user can login", %{conn: conn, user: user} do
       conn =
         post(conn, Routes.api_session_path(conn, :create),
-          email: user.email,
-          password: valid_user_password()
+          %{session: %{ email: user.email,
+          password: valid_user_password()}}
         )
 
       assert %{

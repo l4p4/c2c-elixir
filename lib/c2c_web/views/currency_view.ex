@@ -16,4 +16,12 @@ defmodule C2cWeb.CurrencyView do
       name: currency.name
     }
   end
+
+  def render("error.json", %{message: message}) do
+    %{
+      status: :not_found,
+      data: %{},
+      message: message
+    }
+  end
 end

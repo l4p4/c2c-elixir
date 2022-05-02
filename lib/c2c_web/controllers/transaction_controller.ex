@@ -265,8 +265,8 @@ defmodule C2cWeb.TransactionController do
         {:ok, transaction} ->
           conn
           |> put_status(:created)
-          |> redirect(to: Routes.transaction_path(conn, :show, transaction))
-
+          |> render("show.json", transaction: transaction)
+          
         {:error, %Ecto.Changeset{} = _changeset} ->
           conn
           |> put_status(400)
