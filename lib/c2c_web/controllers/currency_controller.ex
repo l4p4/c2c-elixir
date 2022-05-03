@@ -13,6 +13,7 @@ defmodule C2cWeb.CurrencyController do
     tag("Currencys")
     produces("application/json")
     security([%{Bearer: []}])
+
     response(200, "OK", Schema.ref(:CurrencysResponse),
       example: %{
         data: [
@@ -33,6 +34,7 @@ defmodule C2cWeb.CurrencyController do
     consumes("application/json")
     produces("application/json")
     security([%{Bearer: []}])
+
     parameter(:currency, :body, Schema.ref(:CurrencyRequest), "The currency details",
       example: %{
         currency: %{name: "some name"}
@@ -57,6 +59,7 @@ defmodule C2cWeb.CurrencyController do
     produces("application/json")
     parameter(:id, :path, :integer, "Currency ID", required: true, example: 123)
     security([%{Bearer: []}])
+
     response(200, "OK", Schema.ref(:CurrencyResponse),
       example: %{
         data: %{
@@ -75,6 +78,7 @@ defmodule C2cWeb.CurrencyController do
     consumes("application/json")
     produces("application/json")
     security([%{Bearer: []}])
+
     parameters do
       id(:path, :integer, "Currency ID", required: true, example: 3)
 
@@ -151,50 +155,53 @@ defmodule C2cWeb.CurrencyController do
 
   def index(conn, _params) do
     currencies = Currencies.list_currencies()
+
     if Guardian.Plug.authenticated?(conn) do
       render(conn, "index.json", currencies: currencies)
-      else
-        render(conn, "index.html", currencies: currencies)
-      end
+    else
+      render(conn, "index.html", currencies: currencies)
+    end
   end
 
   def new(conn, _params) do
     changeset = Currencies.change_currency(%Currency{})
+
     if Guardian.Plug.authenticated?(conn) do
-        render(conn, "new.json", changeset: changeset)
-      else
-        render(conn, "new.html", changeset: changeset)
-      end
+      render(conn, "new.json", changeset: changeset)
+    else
+      render(conn, "new.html", changeset: changeset)
+    end
   end
 
   def create(conn, %{"currency" => currency_params}) do
     if Guardian.Plug.authenticated?(conn) do
-        case Currencies.create_currency(currency_params) do
-          {:ok, currency} ->
-            conn
-            |> put_status(:created)
-            |> render("show.json", currency: currency)
+      case Currencies.create_currency(currency_params) do
+        {:ok, currency} ->
+          conn
+          |> put_status(:created)
+          |> render("show.json", currency: currency)
 
-          {:error, %Ecto.Changeset{} = changeset} ->
-            conn
-            |> put_status(400)
-            |> render("error.json", message: "Currency could not be created, malformed data")
+        {:error, %Ecto.Changeset{} = changeset} ->
+          conn
+          |> put_status(400)
+          |> render("error.json", message: "Currency could not be created, malformed data")
       end
     else
-        case Currencies.create_currency(currency_params) do
-          {:ok, currency} ->
-            conn
-            |> put_flash(:info, "Currency created successfully.")
-            |> redirect(to: Routes.currency_path(conn, :show, currency))
+      case Currencies.create_currency(currency_params) do
+        {:ok, currency} ->
+          conn
+          |> put_flash(:info, "Currency created successfully.")
+          |> redirect(to: Routes.currency_path(conn, :show, currency))
 
-          {:error, %Ecto.Changeset{} = changeset} ->
-            render(conn, "new.html", changeset: changeset)
-        end
+        {:error, %Ecto.Changeset{} = changeset} ->
+          render(conn, "new.html", changeset: changeset)
+      end
     end
   end
 
   def show(conn, %{"id" => id}) do
     currency = Currencies.get_currency!(id)
+
     if Guardian.Plug.authenticated?(conn) do
       render(conn, "show.json", currency: currency)
     else
@@ -205,6 +212,7 @@ defmodule C2cWeb.CurrencyController do
   def edit(conn, %{"id" => id}) do
     currency = Currencies.get_currency!(id)
     changeset = Currencies.change_currency(currency)
+
     if Guardian.Plug.authenticated?(conn) do
       render(conn, "edit.json", currency: currency, changeset: changeset)
     else
@@ -243,7 +251,7 @@ defmodule C2cWeb.CurrencyController do
   def delete(conn, %{"id" => id}) do
     currency = Currencies.get_currency!(id)
     {:ok, _currency} = Currencies.delete_currency(currency)
-    
+
     if Guardian.Plug.authenticated?(conn) do
       conn
       |> put_status(200)

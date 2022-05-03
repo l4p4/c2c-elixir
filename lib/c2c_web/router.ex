@@ -22,12 +22,23 @@ defmodule C2cWeb.Router do
     plug(C2cWeb.AuthAccessPipeline)
   end
 
+  ## Control browser authenticated
+
+  scope "/", C2cWeb do
+    pipe_through([:browser, :require_authenticated_user])
+
+    resources("/currencies", CurrencyController)
+    resources("/api_currencies", ApiCurrencyController)
+    resources("/transactions", TransactionController)
+  end
+  
   scope "/api", C2cWeb, as: :api do
     pipe_through(:jwt_authenticated)
 
+    resources("/currencies", CurrencyController)
     resources("/api_currencies", ApiCurrencyController)
     resources("/transactions", TransactionController)
-    resources("/currencies", CurrencyController)
+    post("/convert", TransactionController, :convert)
     get("/my_session", Api.SessionController, :show)
   end
 
@@ -35,9 +46,10 @@ defmodule C2cWeb.Router do
     pipe_through(:api)
 
     post("/sign_in", Api.SessionController, :create)
+    resources("/currencies", CurrencyController)
     resources("/api_currencies", ApiCurrencyController)
     resources("/transactions", TransactionController)
-    resources("/currencies", CurrencyController)
+    post("/convert", TransactionController, :convert)
   end
 
   # Free access index page
@@ -79,16 +91,6 @@ defmodule C2cWeb.Router do
 
       forward("/mailbox", Plug.Swoosh.MailboxPreview)
     end
-  end
-
-  ## Control browser authenticated
-
-  scope "/", C2cWeb do
-    pipe_through([:browser, :require_authenticated_user])
-
-    resources("/currencies", CurrencyController)
-    resources("/api_currencies", ApiCurrencyController)
-    resources("/transactions", TransactionController)
   end
 
   ## Authentication routes

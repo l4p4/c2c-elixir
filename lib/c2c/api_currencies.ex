@@ -82,6 +82,12 @@ defmodule C2c.ApiCurrencies do
     |> Repo.update()
   end
 
+  def decrease_remaining_conversions(%ApiCurrency{} = api_currency) do
+    api_currency
+    |> ApiCurrency.changeset(%{remaining_conversions: (api_currency.remaining_conversions - 1)})
+    |> Repo.update()
+  end
+
   @doc """
   Deletes a api_currency.
 

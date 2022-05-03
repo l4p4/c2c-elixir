@@ -6,7 +6,8 @@
       <th>From</th>
       <th>To</th>
       <th>Fee</th>
-      <th></th>
+      <th>Inserted At</th>
+      <th>Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -15,6 +16,7 @@
       <td><%= Enum.at(Enum.filter(@currencies, fn c -> c.id == transaction.currency_from end), 0).name %> <%= transaction.amount_from %></td>
       <td><%= Enum.at(Enum.filter(@currencies, fn c -> c.id == transaction.currency_to end), 0).name %> <%= transaction.amount_to %></td>
       <td><%= transaction.fee_convert %></td>
+      <td><%= transaction.inserted_at %></td>
 
       <td>
         <span class="bt green"><%= link "Show", to: Routes.transaction_path(@conn, :show, transaction) %></span>

@@ -57,7 +57,8 @@ defmodule C2c.MixProject do
       {:phoenix_swagger, "~> 0.8"},
       {:ex_json_schema, "~> 0.5"},
       {:cors_plug, "~> 2.0"},
-      {:guardian, "~> 2.2.0"}
+      {:guardian, "~> 2.2.0"},
+      {:httpoison, "~> 1.8"}
     ]
   end
 

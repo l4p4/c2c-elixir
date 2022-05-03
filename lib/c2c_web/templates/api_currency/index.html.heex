@@ -3,6 +3,7 @@
 <table>
   <thead>
     <tr>
+      <th>Id</th>
       <th>Url</th>
       <th>Api key</th>
       <th>Remaining conversions</th>
@@ -12,6 +13,7 @@
   <tbody>
 <%= for api_currency <- @api_currencies do %>
     <tr>
+      <td class="ellipsis "><%= api_currency.id %></td>
       <td class="ellipsis "><%= api_currency.url %></td>
       <td class="ellipsis "><%= api_currency.api_key %></td>
       <td><%= api_currency.remaining_conversions %></td>

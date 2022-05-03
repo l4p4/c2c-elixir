@@ -1,7 +1,7 @@
 defmodule C2cWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :c2c
 
-  plug CORSPlug, origin: "*"
+  plug(CORSPlug, origin: "*")
 
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.

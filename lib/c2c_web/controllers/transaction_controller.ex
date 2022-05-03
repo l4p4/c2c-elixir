@@ -5,6 +5,7 @@ defmodule C2cWeb.TransactionController do
   alias C2c.Currencies
   alias C2c.Transactions
   alias C2c.Transactions.Transaction
+  alias C2c.CurrencyConverter
 
   use PhoenixSwagger
 
@@ -150,6 +151,42 @@ defmodule C2cWeb.TransactionController do
     security([%{Bearer: []}])
   end
 
+  swagger_path :convert do
+    post("/api/convert")
+    summary("Convert amount")
+    description("Convert a amount from currency to another")
+    tag("Transactions")
+    consumes("application/json")
+    produces("application/json")
+    security([%{Bearer: []}])
+
+    parameter(:transaction, :body, Schema.ref(:ConvertRequest), "The convert details",
+      example: %{
+        transaction: %{
+          currency_from: 1,
+          amount_from: 1,
+          currency_to: 2,
+          api_currency: 1
+        }
+      }
+    )
+
+    response(201, "Transaction created OK", Schema.ref(:TransactionResponse),
+      example: %{
+        data: %{
+          id: 123,
+          currency_from: 1,
+          amount_from: 120.5,
+          currency_to: 1,
+          amount_to: 120.5,
+          fee_convert: 1,
+          user_id: 2,
+          inserted_at: "2022-05-01T23:22:20"
+        }
+      }
+    )
+  end
+
   def swagger_definitions do
     %{
       Transaction:
@@ -179,6 +216,21 @@ defmodule C2cWeb.TransactionController do
             user_id: 2,
             api_currency_id: 1,
             inserted_at: "2022-05-01T23:22:20"
+          })
+        end,
+      ConvertRequest:
+        swagger_schema do
+          title("ConvertRequest")
+          description("POST body for creating a transaction")
+          property(:transaction, Schema.ref(:Transaction), "The convert transaction details")
+
+          example(%{
+            transaction: %{
+              currency_from: 1,
+              amount_from: 120.5,
+              currency_to: 1,
+              api_currency_id: 1
+            }
           })
         end,
       TransactionRequest:
@@ -266,7 +318,7 @@ defmodule C2cWeb.TransactionController do
           conn
           |> put_status(:created)
           |> render("show.json", transaction: transaction)
-          
+
         {:error, %Ecto.Changeset{} = _changeset} ->
           conn
           |> put_status(400)
@@ -418,6 +470,44 @@ defmodule C2cWeb.TransactionController do
       conn
       |> put_flash(:info, "Transaction deleted successfully.")
       |> redirect(to: Routes.transaction_path(conn, :index))
+    end
+  end
+
+  def convert(conn, %{"transaction" => transaction_params}) do
+    api_currency = ApiCurrencies.get_api_currency_by_id!(transaction_params["api_currency_id"])
+    currency_from = Currencies.get_currency!(transaction_params["currency_from"])
+    currency_to = Currencies.get_currency!(transaction_params["currency_to"])
+    # convert amount / TODO: change block to case statement
+    result = CurrencyConverter.process(
+      api_currency.url,
+      api_currency.api_key,
+      transaction_params["amount_from"],
+      currency_from.name,
+      currency_to.name
+    )
+    # set amount converted and fee/quote used in process.
+    transaction_params = Map.put(transaction_params, "amount_to", result[:result])
+    transaction_params = Map.put(transaction_params, "fee_convert", result[:info]["quote"])
+    # update api_currency service utilized to perform
+    ApiCurrencies.decrease_remaining_conversions(api_currency)
+
+    if Guardian.Plug.authenticated?(conn) do
+      transaction_params =
+        Map.put(transaction_params, "user_id", Guardian.Plug.current_resource(conn).id)
+
+      case Transactions.create_transaction(transaction_params) do
+        {:ok, transaction} ->
+          conn
+          |> put_status(:created)
+          |> render("show.json", transaction: transaction)
+
+        {:error, %Ecto.Changeset{} = _changeset} ->
+          conn
+          |> put_status(400)
+          |> render("error.json", message: "Transaction could not be created, malformed data")
+      end
+    else
+      # Only JWT users can use convert \ TODO: create a view to allow browser convert
     end
   end
 end
