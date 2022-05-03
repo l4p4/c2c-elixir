@@ -22,7 +22,7 @@ defmodule C2c.CurrencyConverter do
         IO.puts("Not found :(")
 
       {:error, %HTTPoison.Error{reason: reason}} ->
-        IO.inspect(reason)
+        IO.puts("#{inspect(reason)}")
     end
   end
 

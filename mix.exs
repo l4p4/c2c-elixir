@@ -10,7 +10,8 @@ defmodule C2c.MixProject do
       compilers: [:phoenix, :gettext] ++ Mix.compilers() ++ [:phoenix_swagger],
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      dialyzer: [ignore_warnings: "dialyzer.ignore-warnings"]
     ]
   end
 

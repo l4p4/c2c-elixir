@@ -3,9 +3,9 @@ defmodule C2cWeb.TransactionController do
 
   alias C2c.ApiCurrencies
   alias C2c.Currencies
+  alias C2c.CurrencyConverter
   alias C2c.Transactions
   alias C2c.Transactions.Transaction
-  alias C2c.CurrencyConverter
 
   use PhoenixSwagger
 

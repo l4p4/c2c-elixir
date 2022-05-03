@@ -181,7 +181,7 @@ defmodule C2cWeb.CurrencyController do
           |> put_status(:created)
           |> render("show.json", currency: currency)
 
-        {:error, %Ecto.Changeset{} = changeset} ->
+        {:error, %Ecto.Changeset{} = _changeset} ->
           conn
           |> put_status(400)
           |> render("error.json", message: "Currency could not be created, malformed data")
@@ -230,7 +230,7 @@ defmodule C2cWeb.CurrencyController do
           |> put_status(200)
           |> redirect(to: Routes.currency_path(conn, :show, currency))
 
-        {:error, %Ecto.Changeset{} = changeset} ->
+        {:error, %Ecto.Changeset{} = _changeset} ->
           conn
           |> put_status(400)
           |> render("error.json", message: "Currency could not be updated. Invalid data type.")
