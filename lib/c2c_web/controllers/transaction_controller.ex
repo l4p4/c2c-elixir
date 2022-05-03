@@ -478,13 +478,15 @@ defmodule C2cWeb.TransactionController do
     currency_from = Currencies.get_currency!(transaction_params["currency_from"])
     currency_to = Currencies.get_currency!(transaction_params["currency_to"])
     # convert amount / TODO: change block to case statement
-    result = CurrencyConverter.process(
-      api_currency.url,
-      api_currency.api_key,
-      transaction_params["amount_from"],
-      currency_from.name,
-      currency_to.name
-    )
+    result =
+      CurrencyConverter.process(
+        api_currency.url,
+        api_currency.api_key,
+        transaction_params["amount_from"],
+        currency_from.name,
+        currency_to.name
+      )
+
     # set amount converted and fee/quote used in process.
     transaction_params = Map.put(transaction_params, "amount_to", result[:result])
     transaction_params = Map.put(transaction_params, "fee_convert", result[:info]["quote"])

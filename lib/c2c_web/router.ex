@@ -31,7 +31,7 @@ defmodule C2cWeb.Router do
     resources("/api_currencies", ApiCurrencyController)
     resources("/transactions", TransactionController)
   end
-  
+
   scope "/api", C2cWeb, as: :api do
     pipe_through(:jwt_authenticated)
 

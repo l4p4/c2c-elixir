@@ -14,14 +14,15 @@ defmodule C2c.CurrencyConverter do
     case HTTPoison.get(url, headers) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         body
-        |> Jason.decode!
+        |> Jason.decode!()
         |> Map.take(@expected_fields)
-        |> Enum.map(fn({k, v}) -> {String.to_atom(k), v} end)
+        |> Enum.map(fn {k, v} -> {String.to_atom(k), v} end)
 
       {:ok, %HTTPoison.Response{status_code: 404}} ->
-        IO.puts "Not found :("
+        IO.puts("Not found :(")
+
       {:error, %HTTPoison.Error{reason: reason}} ->
-        IO.inspect reason
+        IO.inspect(reason)
     end
   end
 
@@ -29,9 +30,9 @@ defmodule C2c.CurrencyConverter do
   def bind(url, from, to, amount) do
     if valid_uri?(url) && valid_binds?(url) do
       url
-        |> String.replace(":from", from)
-        |> String.replace(":to", to)
-        |> String.replace(":amount", "#{amount}")
+      |> String.replace(":from", from)
+      |> String.replace(":to", to)
+      |> String.replace(":amount", "#{amount}")
     end
   end
 

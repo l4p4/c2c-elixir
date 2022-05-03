@@ -15,11 +15,23 @@ defmodule C2c.CurrencyConverterTest do
   end
 
   describe "currency converter binds" do
-    test "verify valid binds", %{url: url, from: from, to: to, amount: amount, url_changed: url_changed} do
+    test "verify valid binds", %{
+      url: url,
+      from: from,
+      to: to,
+      amount: amount,
+      url_changed: url_changed
+    } do
       assert CurrencyConverter.bind(url, from, to, amount) == url_changed
     end
 
-    test "verify invalid url", %{url: url, from: from, to: to, amount: amount, invalid_url: invalid_url} do
+    test "verify invalid url", %{
+      url: url,
+      from: from,
+      to: to,
+      amount: amount,
+      invalid_url: invalid_url
+    } do
       assert CurrencyConverter.bind(url, from, to, amount) != invalid_url
     end
   end
