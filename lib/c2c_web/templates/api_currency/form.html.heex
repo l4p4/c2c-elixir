@@ -1,3 +1,7 @@
+<div class="alert note">
+  <h3>Note:</h3>
+  <p>C2C use the following binds to perform replace over: :from, :to and :amount</p>
+</div>
 <.form let={f} for={@changeset} action={@action}>
   <%= if @changeset.action do %>
     <div class="alert alert-danger">
@@ -6,7 +10,7 @@
   <% end %>
 
   <%= label f, :url %>
-  <%= text_input f, :url %>
+  <%= text_input f, :url, placeholder: "Example: https://api.apilayer.com/currency_data/convert?to=:to&from=:from&amount=:amount" %>
   <%= error_tag f, :url %>
 
   <%= label f, :api_key %>
@@ -16,10 +20,6 @@
   <%= label f, :limit %>
   <%= number_input f, :limit %>
   <%= error_tag f, :limit %>
-
-  <%= label f, :remaining_conversions %>
-  <%= number_input f, :remaining_conversions %>
-  <%= error_tag f, :remaining_conversions %>
 
   <%= label f, :description %>
   <%= textarea f, :description %>

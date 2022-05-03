@@ -44,9 +44,8 @@ defmodule C2cWeb.ApiCurrencyController do
       example: %{
         api_currency: %{
           api_key: "some api_key",
-          description: "some description",
+          description: "some description optional",
           limit: 42,
-          remaining_conversions: 42,
           url: "some url"
         }
       }
@@ -225,6 +224,10 @@ defmodule C2cWeb.ApiCurrencyController do
   end
 
   def create(conn, %{"api_currency" => api_currency_params}) do
+    # remaining_conversions start with limit
+    api_currency_params =
+      Map.put(api_currency_params, "remaining_conversions", api_currency_params["limit"])
+
     if Guardian.Plug.authenticated?(conn) do
       api_currency_params =
         Map.put(api_currency_params, "user_id", Guardian.Plug.current_resource(conn).id)
@@ -286,6 +289,10 @@ defmodule C2cWeb.ApiCurrencyController do
   end
 
   def update(conn, %{"id" => id, "api_currency" => api_currency_params}) do
+    # remaining_conversions update to new limit
+    api_currency_params =
+      Map.put(api_currency_params, "remaining_conversions", api_currency_params["limit"])
+
     if Guardian.Plug.authenticated?(conn) do
       api_currency = ApiCurrencies.get_api_currency!(Guardian.Plug.current_resource(conn), id)
 

@@ -22,6 +22,6 @@ defmodule C2c.ApiCurrencies.ApiCurrency do
   def changeset(api_currency, attrs) do
     api_currency
     |> cast(attrs, [:url, :api_key, :limit, :remaining_conversions, :description, :user_id])
-    |> validate_required([:url, :api_key, :limit, :remaining_conversions, :description, :user_id])
+    |> validate_required([:url, :api_key, :limit, :user_id])
   end
 end

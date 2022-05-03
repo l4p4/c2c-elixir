@@ -128,6 +128,18 @@ Yay!
 Ready to run in production? 
 - `MIX_ENV=prod mix phx.server`
 
+# Demo
+> [c2c-alixir](https://c2c-elixir.herokuapp.com/)
+>
+For now, C2C work only with [API Layer](https://apilayer.com/), just create an account, get your apikey and url endpoint.
+``` 
+apikey example: "gD4V9Ga0jeefzhCxn1yeIDTsOSQ18qJ"
+url example: "https://api.apilayer.com/currency_data/convert?to=to&from=from&amount=amount"
+```
+> Note: Before register the url in C2C, you need modify to format:
+> ``https://api.apilayer.com/currency_data/convert?to=:to&from=:from&amount=:amount``
+- C2C use binds :from, :to and :amount
+
 ## License
 
 MIT
