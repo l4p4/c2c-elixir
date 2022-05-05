@@ -74,32 +74,3 @@ config :phoenix, :json_library, Jason
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
-
-if Mix.env() == :dev do
-  config :git_hooks,
-    auto_install: true,
-    verbose: true,
-    branches: [
-      whitelist: ["master", "feature*", "fix*", "main"]
-      #      blacklist: ["master"]
-    ],
-    hooks: [
-      pre_commit: [
-        tasks: [
-          {:cmd, "mix clean"},
-          {:cmd, "mix compile"},
-          {:cmd, "mix format"},
-          {:cmd, "mix credo --strict"},
-          {:cmd, "mix doctor --summary"},
-          {:cmd, "mix test --color"}
-        ]
-      ],
-      pre_push: [
-        verbose: false,
-        tasks: [
-          {:cmd, "mix dialyzer"},
-          {:cmd, "echo 'success!'"}
-        ]
-      ]
-    ]
-end

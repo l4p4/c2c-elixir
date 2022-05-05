@@ -11,7 +11,10 @@ defmodule C2c.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
-      dialyzer: [ignore_warnings: "dialyzer.ignore-warnings"]
+      dialyzer: dialyzer(System.get_env()) ++ [
+        plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
+        ignore_warnings: "dialyzer.ignore-warnings"
+      ]
     ]
   end
 
@@ -34,7 +37,7 @@ defmodule C2c.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:bcrypt_elixir, "~> 2.0"},
+      {:bcrypt_elixir, "~> 3.0"},
       {:phoenix, "~> 1.6.7"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.6"},
@@ -52,8 +55,7 @@ defmodule C2c.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:git_hooks, "~> 0.7.0", only: [:test, :dev], runtime: false},
-      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
+      {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
       {:doctor, "~> 0.18.0"},
       {:phoenix_swagger, "~> 0.8"},
       {:ex_json_schema, "~> 0.5"},
@@ -78,7 +80,23 @@ defmodule C2c.MixProject do
       "assets.deploy": ["esbuild default --minify", "phx.digest"],
       swagger: [
         "phx.swagger.generate priv/static/swagger.json --router C2cWeb.Router --endpoint C2cWeb.Endpoint"
-      ]
+      ],
+      code_quality: ["format", "credo --strict", "doctor --summary", "dialyzer"]
     ]
+  end
+
+  # Environment specific dialyzer config
+  defp dialyzer(%{"code_quality" => "true"}) do
+    [
+      plt_core_path: ".dialyzer/core",
+      plt_local_path: ".dialyzer/local"
+    ] ++ dialyzer()
+  end
+
+  defp dialyzer(_), do: dialyzer()
+
+  # Common dialyzer config
+  defp dialyzer do
+    [plt_add_apps: [:mix, :ex_unit]]
   end
 end

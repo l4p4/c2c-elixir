@@ -2,6 +2,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/intellij,elixir,vagrant,windows,linux,osx,erlang
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij,elixir,vagrant,windows,linux,osx,erlang
 
+#ACT
+/bin
+
 # App artifacts
 /_build
 /db

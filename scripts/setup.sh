@@ -66,6 +66,13 @@ chown -R vagrant:vagrant /home/vagrant/
 # fix vbox group shared folders
 adduser $(whoami) vboxsf
 
+
+# Install ACT - https://github.com/nektos/act
+# Run your GitHub Actions locally!
+curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
+# NOTE: After all, run: ./bin/act and configure your env
+
+
 # clean the box
 apt-get -y autoclean
 apt-get -y clean
