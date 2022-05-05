@@ -67,27 +67,11 @@ Build rich, interactive web applications quickly, with less code and fewer movin
 * The Dialyzer, a DIscrepancy AnalYZer for ERlang programs. Dialyzer is a static analysis tool used for checking types and other discrepancies such as dead or unreachable code. Dialyzer examines .erl or .beam files (not .ex or .exs) – more on this in a minute.
 `mix dialyzer`
 
-[Git Hook](https://github.com/qgadrian/elixir_git_hooks)
-* Simplicity: Automatic or manually install the configured git hook actions.
+[CI/CD Github - ACT](https://github.com/nektos/act)
+* Run your GitHub Actions locally! Before submitting a contribution, run ACT locally to verify testing and code quality.
 ```
-pre_commit: [
-tasks: [
-        {:cmd, "mix clean"},
-        {:cmd, "mix compile"},
-        {:cmd, "mix format --check-formatted"},
-        {:cmd, "mix credo --strict"},
-        {:cmd, "mix doctor --summary"},
-        {:cmd, "mix test"}
-    ]
-],
-pre_push: [
-        verbose: false,
-        tasks: [
-            {:cmd, "mix dialyzer"},
-            {:cmd, "mix test --color"},
-            {:cmd, "echo 'success!'"}
-        ]
-] 
+# Run the default (`push`) event:
+act
 ```
 
 ## Development
